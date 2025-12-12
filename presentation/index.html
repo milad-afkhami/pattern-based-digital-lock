@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pattern-Based Digital Lock | CAD Course Project</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        /* Circuit board inspired palette */
+        --bg-primary: #0a0f14;
+        --bg-secondary: #0d1419;
+        --bg-tertiary: #111920;
+        --accent-copper: #c77d4e;
+        --accent-gold: #d4a853;
+        --accent-green: #4ade80;
+        --accent-red: #ef4444;
+        --text-primary: #e8e6e3;
+        --text-secondary: #9ca3af;
+        --text-muted: #6b7280;
+        --grid-line: rgba(199, 125, 78, 0.08);
+        --glow-copper: rgba(199, 125, 78, 0.4);
+
+        /* Typography scale */
+        --font-display: "Instrument Serif", Georgia, serif;
+        --font-mono: "JetBrains Mono", "Fira Code", monospace;
+
+        /* Spacing */
+        --slide-padding: clamp(2rem, 5vw, 4rem);
+      }
+
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        scroll-snap-type: y mandatory;
+      }
+
+      body {
+        font-family: var(--font-mono);
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.7;
+        font-size: 16px;
+        overflow-x: hidden;
+      }
+
+      /* Circuit board grid background */
+      .circuit-grid {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        background-image: linear-gradient(var(--grid-line) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+        background-size: 40px 40px;
+        opacity: 0.6;
+      }
+
+      .circuit-grid::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+            ellipse at 20% 30%,
+            rgba(199, 125, 78, 0.03) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            ellipse at 80% 70%,
+            rgba(212, 168, 83, 0.02) 0%,
+            transparent 50%
+          );
+      }
+
+      /* Navigation */
+      .nav {
+        position: fixed;
+        right: 2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .nav-dot {
+        width: 12px;
+        height: 12px;
+        border: 2px solid var(--accent-copper);
+        border-radius: 50%;
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .nav-dot:hover,
+      .nav-dot.active {
+        background: var(--accent-copper);
+        box-shadow: 0 0 12px var(--glow-copper);
+      }
+
+      .nav-dot::after {
+        content: attr(data-label);
+        position: absolute;
+        right: 24px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .nav-dot:hover::after {
+        opacity: 1;
+      }
+
+      /* Slide base */
+      .slide {
+        min-height: 100vh;
+        scroll-snap-align: start;
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: var(--slide-padding);
+        padding-right: 5rem;
+      }
+
+      .slide-number {
+        position: absolute;
+        top: 2rem;
+        left: 2rem;
+        font-size: 0.75rem;
+        color: var(--accent-copper);
+        letter-spacing: 0.2em;
+        font-weight: 500;
+      }
+
+      .slide-number::before {
+        content: "//";
+        margin-right: 0.5rem;
+        opacity: 0.5;
+      }
+
+      /* Typography */
+      h1 {
+        font-family: var(--font-display);
+        font-size: clamp(3rem, 8vw, 6rem);
+        font-weight: 400;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(
+          135deg,
+          var(--text-primary) 0%,
+          var(--accent-gold) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      h2 {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 400;
+        line-height: 1.2;
+        margin-bottom: 2rem;
+        color: var(--text-primary);
+      }
+
+      h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--accent-copper);
+        margin-bottom: 1rem;
+      }
+
+      p {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        max-width: 65ch;
+        margin-bottom: 1.5rem;
+      }
+
+      .lead {
+        font-size: 1.25rem;
+        color: var(--text-primary);
+        font-weight: 300;
+      }
+
+      /* Title slide */
+      .slide-title {
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .title-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 3rem;
+        font-size: 0.875rem;
+        color: var(--text-muted);
+      }
+
+      .title-meta span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+      }
+
+      .title-meta span::before {
+        content: "";
+        width: 24px;
+        height: 1px;
+        background: var(--accent-copper);
+      }
+
+      .title-badge {
+        display: inline-block;
+        padding: 0.5rem 1.5rem;
+        border: 1px solid var(--accent-copper);
+        color: var(--accent-copper);
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin-bottom: 2rem;
+      }
+
+      /* Content layouts */
+      .two-column {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+      }
+
+      .three-column {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+
+      @media (max-width: 900px) {
+        .two-column,
+        .three-column {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+      }
+
+      /* Cards */
+      .card {
+        background: var(--bg-secondary);
+        border: 1px solid rgba(199, 125, 78, 0.2);
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          var(--accent-copper),
+          var(--accent-gold)
+        );
+      }
+
+      .card-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--accent-copper);
+        color: var(--accent-copper);
+        font-size: 1.25rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .card h4 {
+        font-size: 1.125rem;
+        font-weight: 500;
+        margin-bottom: 0.75rem;
+        color: var(--text-primary);
+      }
+
+      .card p {
+        font-size: 0.875rem;
+        margin-bottom: 0;
+      }
+
+      /* State diagram visualization */
+      .state-diagram {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        padding: 2rem;
+      }
+
+      .state-node {
+        width: 100px;
+        height: 100px;
+        border: 2px solid var(--accent-copper);
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        position: relative;
+        background: var(--bg-secondary);
+        transition: all 0.3s ease;
+      }
+
+      .state-node:hover {
+        box-shadow: 0 0 30px var(--glow-copper);
+        transform: scale(1.05);
+      }
+
+      .state-node.locked {
+        border-color: var(--accent-red);
+      }
+
+      .state-node.unlocked {
+        border-color: var(--accent-green);
+        box-shadow: 0 0 20px rgba(74, 222, 128, 0.3);
+      }
+
+      .state-arrow {
+        color: var(--accent-copper);
+        font-size: 1.5rem;
+        opacity: 0.6;
+      }
+
+      .state-label {
+        font-size: 0.6rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+      }
+
+      /* Code blocks */
+      .code-block {
+        background: var(--bg-tertiary);
+        border: 1px solid rgba(199, 125, 78, 0.15);
+        padding: 1.5rem;
+        overflow-x: auto;
+        position: relative;
+      }
+
+      .code-block::before {
+        content: attr(data-lang);
+        position: absolute;
+        top: 0.75rem;
+        right: 1rem;
+        font-size: 0.65rem;
+        color: var(--accent-copper);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .code-block code {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        line-height: 1.8;
+        color: var(--text-secondary);
+      }
+
+      .code-keyword {
+        color: var(--accent-copper);
+      }
+      .code-type {
+        color: var(--accent-gold);
+      }
+      .code-string {
+        color: var(--accent-green);
+      }
+      .code-comment {
+        color: var(--text-muted);
+        font-style: italic;
+      }
+
+      /* Image placeholders */
+      .image-placeholder {
+        background: var(--bg-tertiary);
+        border: 2px dashed rgba(199, 125, 78, 0.3);
+        padding: 3rem 2rem;
+        text-align: center;
+        position: relative;
+        min-height: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .image-placeholder::before {
+        content: "⬚";
+        font-size: 3rem;
+        color: var(--accent-copper);
+        opacity: 0.5;
+        margin-bottom: 1rem;
+      }
+
+      .placeholder-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .placeholder-desc {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        max-width: 40ch;
+        line-height: 1.6;
+      }
+
+      .placeholder-guide {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: rgba(199, 125, 78, 0.1);
+        border-left: 3px solid var(--accent-copper);
+        text-align: left;
+        font-size: 0.7rem;
+        color: var(--text-secondary);
+        max-width: 100%;
+      }
+
+      .placeholder-guide strong {
+        color: var(--accent-copper);
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .placeholder-guide ol {
+        margin-left: 1rem;
+        margin-top: 0.5rem;
+      }
+
+      .placeholder-guide li {
+        margin-bottom: 0.35rem;
+      }
+
+      .placeholder-guide code {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 0.1rem 0.3rem;
+        font-size: 0.65rem;
+      }
+
+      /* Tables */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.875rem;
+        margin-top: 1.5rem;
+      }
+
+      .data-table th {
+        text-align: left;
+        padding: 1rem;
+        background: var(--bg-tertiary);
+        color: var(--accent-copper);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-size: 0.75rem;
+        border-bottom: 2px solid var(--accent-copper);
+      }
+
+      .data-table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(199, 125, 78, 0.1);
+        color: var(--text-secondary);
+      }
+
+      .data-table tr:hover td {
+        background: rgba(199, 125, 78, 0.05);
+      }
+
+      /* Status indicators */
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+      }
+
+      .status::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+
+      .status.pass::before {
+        background: var(--accent-green);
+        box-shadow: 0 0 8px var(--accent-green);
+      }
+
+      .status.pass {
+        color: var(--accent-green);
+      }
+
+      /* Sequence visualization */
+      .sequence-flow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .sequence-btn {
+        width: 60px;
+        height: 60px;
+        border: 2px solid var(--accent-copper);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--accent-copper);
+        background: var(--bg-secondary);
+        transition: all 0.3s ease;
+      }
+
+      .sequence-btn:hover {
+        background: var(--accent-copper);
+        color: var(--bg-primary);
+      }
+
+      .sequence-arrow {
+        font-size: 1.25rem;
+        color: var(--text-muted);
+      }
+
+      .sequence-result {
+        padding: 0.75rem 1.5rem;
+        background: rgba(74, 222, 128, 0.1);
+        border: 1px solid var(--accent-green);
+        color: var(--accent-green);
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+
+      /* Bullet list */
+      .feature-list {
+        list-style: none;
+        margin-top: 1.5rem;
+      }
+
+      .feature-list li {
+        padding: 0.75rem 0;
+        padding-left: 2rem;
+        position: relative;
+        color: var(--text-secondary);
+        border-bottom: 1px solid rgba(199, 125, 78, 0.1);
+      }
+
+      .feature-list li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--accent-copper);
+      }
+
+      /* Statistics */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-top: 2rem;
+      }
+
+      @media (max-width: 768px) {
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .stat-item {
+        text-align: center;
+        padding: 1.5rem;
+        background: var(--bg-secondary);
+        border: 1px solid rgba(199, 125, 78, 0.2);
+      }
+
+      .stat-value {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: var(--accent-gold);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--text-muted);
+      }
+
+      /* Animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .animate-in {
+        animation: fadeInUp 0.8s ease forwards;
+      }
+
+      .delay-1 {
+        animation-delay: 0.1s;
+        opacity: 0;
+      }
+      .delay-2 {
+        animation-delay: 0.2s;
+        opacity: 0;
+      }
+      .delay-3 {
+        animation-delay: 0.3s;
+        opacity: 0;
+      }
+      .delay-4 {
+        animation-delay: 0.4s;
+        opacity: 0;
+      }
+
+      /* Print styles */
+      @media print {
+        .circuit-grid,
+        .nav {
+          display: none;
+        }
+
+        .slide {
+          page-break-after: always;
+          min-height: auto;
+          padding: 2rem;
+        }
+
+        body {
+          background: white;
+          color: black;
+        }
+      }
+
+      /* Footer */
+      .slide-footer {
+        position: absolute;
+        bottom: 2rem;
+        left: 2rem;
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        display: flex;
+        gap: 2rem;
+      }
+
+      /* Architecture diagram */
+      .arch-diagram {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 2rem;
+        background: var(--bg-secondary);
+        border: 1px solid rgba(199, 125, 78, 0.2);
+      }
+
+      .arch-row {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
+
+      .arch-box {
+        padding: 1rem 1.5rem;
+        border: 1px solid var(--accent-copper);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: var(--bg-tertiary);
+        text-align: center;
+        flex: 1;
+      }
+
+      .arch-box.main {
+        border-color: var(--accent-gold);
+        color: var(--accent-gold);
+      }
+
+      .arch-connector {
+        color: var(--text-muted);
+        font-size: 1.25rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="circuit-grid"></div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+      <a href="#slide-1" class="nav-dot active" data-label="Title"></a>
+      <a href="#slide-2" class="nav-dot" data-label="Overview"></a>
+      <a href="#slide-3" class="nav-dot" data-label="Architecture"></a>
+      <a href="#slide-4" class="nav-dot" data-label="FSM Design"></a>
+      <a href="#slide-5" class="nav-dot" data-label="Debouncing"></a>
+      <a href="#slide-6" class="nav-dot" data-label="Implementation"></a>
+      <a href="#slide-7" class="nav-dot" data-label="Verification"></a>
+      <a href="#slide-8" class="nav-dot" data-label="Waveforms"></a>
+      <a href="#slide-9" class="nav-dot" data-label="Results"></a>
+      <a href="#slide-10" class="nav-dot" data-label="Conclusion"></a>
+    </nav>
+
+    <!-- Slide 1: Title -->
+    <section class="slide slide-title" id="slide-1">
+      <div class="animate-in">
+        <span class="title-badge">CAD Course Project</span>
+        <h1>Pattern-Based<br />Digital Lock</h1>
+        <p class="lead">A Finite State Machine Implementation in VHDL</p>
+        <div class="title-meta">
+          <span>Computer-Aided Design</span>
+          <span>University Course Project</span>
+          <span>December 2025</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 2: Project Overview -->
+    <section class="slide" id="slide-2">
+      <span class="slide-number">01</span>
+      <div class="two-column">
+        <div>
+          <h3>Introduction</h3>
+          <h2>Project Overview</h2>
+          <p class="lead">
+            A hardware-based digital lock system requiring a specific 4-button
+            sequence to unlock, implemented using finite state machine
+            methodology.
+          </p>
+
+          <ul class="feature-list animate-in delay-1">
+            <li>Secure pattern-based authentication (A → B → C → A)</li>
+            <li>Button debouncing for reliable physical input</li>
+            <li>Automatic re-lock timer functionality</li>
+            <li>Wrong input detection and recovery</li>
+            <li>Fully synthesizable for FPGA deployment</li>
+          </ul>
+        </div>
+        <div class="animate-in delay-2">
+          <img
+            src="./assets/System-Block-Diagram.png"
+            style="max-width: 50vw; height: auto"
+            alt="System Block Diagram"
+          />
+          <a
+            href="https://www.mermaidchart.com/play?utm_source=mermaid_live_editor&utm_medium=toggle#pako:eNqVkl1vgyAUhv_KCRfe-Qe8WCLQJUtcurTNbmaz-HH6kVJoENYsy_77QFsV6824EZ-H83pAfkilaiQJieM4l5WSu-M-ySWAOeAZE5Co4rrQJ4-EUqeWtC_Ft7ImARTOtcU7oa7VodAGspVb0dhyr4vLAV7kxZrmIyfdJCdbX9-N0sjUGWqNURJSWBXXqaeDp3OeDZ7NeT54PvIo63GTHEtlZYXaNzq8BGE1lunYQjrVNNB0qlmg2VTzQPP5RjfLt89s8b7I3OKNukCGXyiCpFH3Pds1Zx9-3B9NISBT1WlwfjyvX4EpabQSAvX8l5fW3H7kbRZ8VbhMp3w0rE1h7ERj7e0i3NXtBkAcP7Wn2yN6R7RH7I5Yj_gd8Q75iBa57faEPhD2QHhIKuG3wtzNJtu-N4i6tKiLiLq6aKjS2KBxdSv__Felm7SL_Rk67s6K_P4BKSwUDA"
+            style="
+              display: block;
+              margin-top: 0.5rem;
+              font-size: 0.75rem;
+              color: var(--text-muted);
+            "
+            >View Full Diagram</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 3: System Architecture -->
+    <section class="slide" id="slide-3">
+      <span class="slide-number">02</span>
+      <h3>System Design</h3>
+      <h2>Hardware Architecture</h2>
+      <p>
+        The system comprises three primary VHDL modules integrated in a
+        hierarchical design pattern.
+      </p>
+
+      <div class="three-column animate-in delay-1">
+        <div class="card">
+          <div class="card-icon">FSM</div>
+          <h4>digital_lock.vhd</h4>
+          <p>
+            Core finite state machine implementing the 5-state lock controller
+            with auto-relock timer functionality.
+          </p>
+          <p
+            style="
+              color: var(--accent-copper);
+              font-size: 0.75rem;
+              margin-top: 1rem;
+            "
+          >
+            156 lines | 4 processes
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-icon">DEB</div>
+          <h4>button_debouncer.vhd</h4>
+          <p>
+            Counter-based debounce circuit with 2-stage metastability
+            synchronizer and edge detection.
+          </p>
+          <p
+            style="
+              color: var(--accent-copper);
+              font-size: 0.75rem;
+              margin-top: 1rem;
+            "
+          >
+            93 lines | 1 process
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-icon">TOP</div>
+          <h4>top_level.vhd</h4>
+          <p>
+            System integration module instantiating 4 debouncers and 1 FSM
+            controller with configurable generics.
+          </p>
+          <p
+            style="
+              color: var(--accent-copper);
+              font-size: 0.75rem;
+              margin-top: 1rem;
+            "
+          >
+            154 lines | Synthesizable
+          </p>
+        </div>
+      </div>
+
+      <div class="arch-diagram animate-in delay-2" style="margin-top: 3rem">
+        <div class="arch-row">
+          <div class="arch-box">Button A</div>
+          <div class="arch-box">Button B</div>
+          <div class="arch-box">Button C</div>
+          <div class="arch-box">Button D</div>
+        </div>
+        <div style="text-align: center; color: var(--text-muted)">
+          ↓ Raw Inputs
+        </div>
+        <div class="arch-row">
+          <div class="arch-box">Debouncer</div>
+          <div class="arch-box">Debouncer</div>
+          <div class="arch-box">Debouncer</div>
+          <div class="arch-box">Debouncer</div>
+        </div>
+        <div style="text-align: center; color: var(--text-muted)">
+          ↓ Clean Pulses
+        </div>
+        <div class="arch-row">
+          <div class="arch-box main" style="flex: 4">
+            Digital Lock FSM Controller
+          </div>
+        </div>
+        <div style="text-align: center; color: var(--text-muted)">↓</div>
+        <div class="arch-row">
+          <div
+            class="arch-box"
+            style="flex: 2; border-color: var(--accent-green)"
+          >
+            Lock Status Output
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 4: FSM Design -->
+    <section class="slide" id="slide-4">
+      <span class="slide-number">03</span>
+      <div class="two-column">
+        <div>
+          <h3>Finite State Machine</h3>
+          <h2>State Machine Design</h2>
+          <p>
+            The lock controller implements a Moore-type FSM with 5 states,
+            following the industry-standard 3-process pattern for reliable
+            synthesis.
+          </p>
+
+          <div class="sequence-flow" style="margin: 2rem 0">
+            <div class="sequence-btn">A</div>
+            <span class="sequence-arrow">→</span>
+            <div class="sequence-btn">B</div>
+            <span class="sequence-arrow">→</span>
+            <div class="sequence-btn">C</div>
+            <span class="sequence-arrow">→</span>
+            <div class="sequence-btn">A</div>
+            <span class="sequence-arrow">→</span>
+            <div class="sequence-result">UNLOCKED</div>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>State</th>
+                <th>Correct Input</th>
+                <th>Output</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>STATE_LOCKED</td>
+                <td>Button A</td>
+                <td>lock_status = '0'</td>
+              </tr>
+              <tr>
+                <td>STATE_FIRST</td>
+                <td>Button B</td>
+                <td>lock_status = '0'</td>
+              </tr>
+              <tr>
+                <td>STATE_SECOND</td>
+                <td>Button C</td>
+                <td>lock_status = '0'</td>
+              </tr>
+              <tr>
+                <td>STATE_THIRD</td>
+                <td>Button A</td>
+                <td>lock_status = '0'</td>
+              </tr>
+              <tr>
+                <td>STATE_UNLOCKED</td>
+                <td>—</td>
+                <td>lock_status = '1'</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="animate-in delay-2">
+          <img
+            src="./assets/FSM-State-Diagram.png"
+            style="max-height: 80vh; width: auto"
+            alt="FSM State Diagram"
+          />
+          <a
+            href="https://www.mermaidchart.com/play?utm_source=mermaid_live_editor&utm_medium=toggle#pako:eNqNkl1rgzAUhv_KwRthEFx3KWzg15hstEPd1Swl6KkNajI0dhtj_30zTppqW5Zc5ZzzvE8I-TIykaNhG4SQlGeCb1lhpxxA7rBGGzgKktOm7EuVEKWqqAP9FJ20AavfnoJbSSX6jBYNrcn-ph8CeL1aAyF3ECdOEmyeVt5j4NsQYYsSLHgW79gQwVO1-3l9TgPvwyhObHA7KQUHB27BXJgXiVH1h7iWZ_kjpoMqWePiwFstNW6umhITk3PONCRrYPIQRgfOm5tmxEzlnlapZI17WU7JuWzK_PcBx-wTaMJqbCD4eGMN5scsFxKhYcVOgtgeYUO_X5XIyk3_q7q2h6_NQyvkTDJagfpzQxl5rlIvGca7nnUsNMdwe5pJtp8ojO8fuZ3qcA"
+            style="
+              display: block;
+              margin-top: 0.5rem;
+              font-size: 0.75rem;
+              color: var(--text-muted);
+            "
+            >View Full Diagram</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 5: Debouncing -->
+    <section class="slide" id="slide-5">
+      <span class="slide-number">04</span>
+      <div class="two-column">
+        <div>
+          <h3>Input Processing</h3>
+          <h2>Button Debouncing</h2>
+          <p>
+            Mechanical buttons exhibit contact bounce—rapid on/off transitions
+            lasting 5-20ms. The debouncer module filters this noise and provides
+            clean, single-cycle pulses to the FSM.
+          </p>
+
+          <div class="card" style="margin-top: 2rem">
+            <h4>Debouncer Architecture</h4>
+            <ul class="feature-list" style="margin-top: 1rem">
+              <li>
+                <strong>2-Stage Synchronizer:</strong> Prevents metastability
+                from asynchronous inputs
+              </li>
+              <li>
+                <strong>Counter-Based Filter:</strong> Requires stable input for
+                DEBOUNCE_TIME cycles
+              </li>
+              <li>
+                <strong>Edge Detector:</strong> Generates single pulse on rising
+                edge only
+              </li>
+            </ul>
+          </div>
+
+          <div class="code-block" data-lang="VHDL" style="margin-top: 2rem">
+            <code>
+              <span class="code-comment"
+                >-- Edge detection: generate pulse on rising edge</span
+              >
+              <span class="code-keyword">if</span> button_stable =
+              <span class="code-string">'1'</span>
+              <span class="code-keyword">and</span> button_prev =
+              <span class="code-string">'0'</span>
+              <span class="code-keyword">then</span> button_out <=
+              <span class="code-string">'1'</span>;
+              <span class="code-comment">-- Rising edge detected</span>
+              <span class="code-keyword">else</span>
+              button_out <= <span class="code-string">'0'</span>;
+              <span class="code-keyword">end if</span>;
+            </code>
+          </div>
+        </div>
+        <div class="animate-in delay-2">
+          <div class="image-placeholder">
+            <span class="placeholder-title">Debouncer Flow Diagram</span>
+            <p class="placeholder-desc">
+              Processing flow from raw input to clean pulse output
+            </p>
+            <div class="placeholder-guide">
+              <strong>Screenshot Guide</strong>
+              <ol>
+                <li>Open <code>docs/button_debouncer.md</code></li>
+                <li>Navigate to "Processing Flow" section</li>
+                <li>
+                  The Mermaid flowchart shows: Raw Input → Synchronizer →
+                  Counter → Edge Detector → Output
+                </li>
+                <li>Render in GitHub, VSCode, or Mermaid Live Editor</li>
+                <li>Screenshot the flowchart diagram</li>
+                <li>
+                  Replace placeholder with:
+                  <code>&lt;img src="images/debouncer-flow.png"&gt;</code>
+                </li>
+              </ol>
+            </div>
+          </div>
+
+          <div
+            class="image-placeholder"
+            style="margin-top: 2rem; min-height: 200px"
+          >
+            <span class="placeholder-title">Bounce vs. Debounced Signal</span>
+            <p class="placeholder-desc">
+              Timing diagram comparing raw and filtered signals
+            </p>
+            <div class="placeholder-guide">
+              <strong>Screenshot Guide</strong>
+              <ol>
+                <li>Run: <code>./scripts/test.sh tb_debouncer</code></li>
+                <li>
+                  Open waveform: <code>./scripts/wave.sh tb_debouncer</code>
+                </li>
+                <li>
+                  Add signals: <code>button_in</code>,
+                  <code>button_stable</code>, <code>button_out</code>,
+                  <code>counter</code>
+                </li>
+                <li>
+                  Zoom to show the TEST 2 (bouncy press) region where input
+                  bounces
+                </li>
+                <li>
+                  Screenshot showing: bouncy input → stable debounced → single
+                  pulse output
+                </li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 6: Implementation Details -->
+    <section class="slide" id="slide-6">
+      <span class="slide-number">05</span>
+      <h3>VHDL Implementation</h3>
+      <h2>Code Architecture</h2>
+      <p>
+        The FSM employs the industry-standard 3-process pattern: state register,
+        next-state logic, and output logic, enhanced with a fourth process for
+        the auto-relock timer.
+      </p>
+
+      <div class="two-column" style="margin-top: 2rem">
+        <div>
+          <div class="code-block" data-lang="VHDL">
+            <code>
+              <span class="code-comment">-- State type definition</span>
+              <span class="code-keyword">type</span>
+              <span class="code-type">state_type</span>
+              <span class="code-keyword">is</span> ( STATE_LOCKED, STATE_FIRST,
+              STATE_SECOND, STATE_THIRD, STATE_UNLOCKED );
+
+              <span class="code-keyword">signal</span> current_state :
+              <span class="code-type">state_type</span> := STATE_LOCKED;
+              <span class="code-keyword">signal</span> next_state :
+              <span class="code-type">state_type</span>;
+              <span class="code-keyword">signal</span> unlock_timer :
+              <span class="code-type">integer</span>
+              <span class="code-keyword">range</span> 0
+              <span class="code-keyword">to</span> UNLOCK_TIME;
+            </code>
+          </div>
+
+          <div class="code-block" data-lang="VHDL" style="margin-top: 1rem">
+            <code>
+              <span class="code-comment"
+                >-- Process 1: State Register (Sequential)</span
+              >
+              <span class="code-keyword">state_register:</span>
+              <span class="code-keyword">process</span>(clk, reset)
+              <span class="code-keyword">begin</span>
+              <span class="code-keyword">if</span> reset =
+              <span class="code-string">'1'</span>
+              <span class="code-keyword">then</span>
+              current_state <= STATE_LOCKED;
+              <span class="code-keyword">elsif</span>
+              <span class="code-type">rising_edge</span>(clk)
+              <span class="code-keyword">then</span>
+              current_state <= next_state;
+              <span class="code-keyword">end if</span>;
+              <span class="code-keyword">end process</span>;
+            </code>
+          </div>
+        </div>
+        <div>
+          <div class="code-block" data-lang="VHDL">
+            <code>
+              <span class="code-comment"
+                >-- Process 2: Next State Logic (Combinational)</span
+              >
+              <span class="code-keyword">next_state_logic:</span>
+              <span class="code-keyword">process</span>(current_state, button_A,
+              button_B, button_C, button_D)
+              <span class="code-keyword">begin</span>
+              next_state <= current_state;
+              <span class="code-comment">-- Default</span>
+
+              <span class="code-keyword">case</span> current_state
+              <span class="code-keyword">is</span>
+              <span class="code-keyword">when</span> STATE_LOCKED =>
+              <span class="code-keyword">if</span> button_A =
+              <span class="code-string">'1'</span>
+              <span class="code-keyword">then</span>
+              next_state <= STATE_FIRST;
+              <span class="code-keyword">end if</span>;
+
+              <span class="code-keyword">when</span> STATE_FIRST =>
+              <span class="code-keyword">if</span> button_B =
+              <span class="code-string">'1'</span>
+              <span class="code-keyword">then</span>
+              next_state <= STATE_SECOND;
+              <span class="code-keyword">elsif</span> button_A =
+              <span class="code-string">'1'</span>
+              <span class="code-keyword">or</span> button_C =
+              <span class="code-string">'1'</span>
+              <span class="code-keyword">or</span> button_D =
+              <span class="code-string">'1'</span>
+              <span class="code-keyword">then</span>
+              next_state <= STATE_LOCKED;
+              <span class="code-keyword">end if</span>;
+              <span class="code-comment">-- ... additional states</span>
+              <span class="code-keyword">end case</span>;
+              <span class="code-keyword">end process</span>;
+            </code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 7: Verification -->
+    <section class="slide" id="slide-7">
+      <span class="slide-number">06</span>
+      <h3>Design Verification</h3>
+      <h2>Test Methodology</h2>
+      <p>
+        Comprehensive verification was conducted using GHDL simulation with 5
+        testbenches covering unit testing, integration testing, coverage
+        analysis, and edge case validation.
+      </p>
+
+      <div class="stats-grid animate-in delay-1">
+        <div class="stat-item">
+          <div class="stat-value">5</div>
+          <div class="stat-label">Testbenches</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">61</div>
+          <div class="stat-label">Assertions</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">100%</div>
+          <div class="stat-label">Coverage</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">0</div>
+          <div class="stat-label">Failures</div>
+        </div>
+      </div>
+
+      <table class="data-table animate-in delay-2" style="margin-top: 2rem">
+        <thead>
+          <tr>
+            <th>Testbench</th>
+            <th>Purpose</th>
+            <th>Test Cases</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>tb_digital_lock</td>
+            <td>FSM unit verification</td>
+            <td>6 tests</td>
+            <td><span class="status pass">All Passed</span></td>
+          </tr>
+          <tr>
+            <td>tb_top_level</td>
+            <td>Full system integration</td>
+            <td>11 tests</td>
+            <td><span class="status pass">All Passed</span></td>
+          </tr>
+          <tr>
+            <td>tb_fsm_coverage</td>
+            <td>State & transition coverage</td>
+            <td>18 assertions</td>
+            <td><span class="status pass">All Passed</span></td>
+          </tr>
+          <tr>
+            <td>tb_edge_cases</td>
+            <td>Boundary conditions</td>
+            <td>22 assertions</td>
+            <td><span class="status pass">All Passed</span></td>
+          </tr>
+          <tr>
+            <td>tb_debouncer</td>
+            <td>Debouncer unit verification</td>
+            <td>4 tests</td>
+            <td><span class="status pass">All Passed</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Slide 8: Waveform Analysis -->
+    <section class="slide" id="slide-8">
+      <span class="slide-number">07</span>
+      <h3>Simulation Results</h3>
+      <h2>Waveform Analysis</h2>
+      <p>
+        Signal waveforms captured during simulation demonstrate correct FSM
+        behavior across all operational scenarios.
+      </p>
+
+      <div class="two-column" style="margin-top: 2rem">
+        <div class="image-placeholder animate-in delay-1">
+          <span class="placeholder-title"
+            >Correct Unlock Sequence Waveform</span
+          >
+          <p class="placeholder-desc">
+            Shows state transitions during successful A→B→C→A sequence
+          </p>
+          <div class="placeholder-guide">
+            <strong>Screenshot Guide</strong>
+            <ol>
+              <li>
+                Run the FSM test: <code>./scripts/test.sh tb_digital_lock</code>
+              </li>
+              <li>
+                Open GTKWave: <code>./scripts/wave.sh tb_digital_lock</code>
+              </li>
+              <li>
+                Add these signals (in order):
+                <ul style="margin-left: 1rem; margin-top: 0.25rem">
+                  <li><code>clk</code></li>
+                  <li><code>reset</code></li>
+                  <li><code>button_a</code></li>
+                  <li><code>button_b</code></li>
+                  <li><code>button_c</code></li>
+                  <li><code>current_state</code></li>
+                  <li><code>lock_status</code></li>
+                </ul>
+              </li>
+              <li>
+                Navigate to TC2 (around 100-200ns) - the correct sequence test
+              </li>
+              <li>Zoom to show all 4 button presses and state changes</li>
+              <li>
+                Screenshot should show: LOCKED→FIRST→SECOND→THIRD→UNLOCKED
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="image-placeholder animate-in delay-2">
+          <span class="placeholder-title">Auto-Relock Timer Waveform</span>
+          <p class="placeholder-desc">
+            Demonstrates automatic re-locking after timeout
+          </p>
+          <div class="placeholder-guide">
+            <strong>Screenshot Guide</strong>
+            <ol>
+              <li>Using same GTKWave session from above</li>
+              <li>
+                Add signal: <code>unlock_timer</code> (from uut hierarchy)
+              </li>
+              <li>Navigate to TC5 region - the auto-relock test</li>
+              <li>
+                Zoom to show:
+                <ul style="margin-left: 1rem; margin-top: 0.25rem">
+                  <li>State reaching UNLOCKED</li>
+                  <li><code>lock_status</code> going HIGH</li>
+                  <li><code>unlock_timer</code> counting up (0,1,2,3,4,5)</li>
+                  <li>State returning to LOCKED</li>
+                  <li><code>lock_status</code> going LOW</li>
+                </ul>
+              </li>
+              <li>Screenshot the complete auto-relock cycle</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="image-placeholder animate-in delay-3"
+        style="margin-top: 2rem"
+      >
+        <span class="placeholder-title">Wrong Sequence Detection Waveform</span>
+        <p class="placeholder-desc">
+          Shows FSM returning to LOCKED state on incorrect button press
+        </p>
+        <div class="placeholder-guide">
+          <strong>Screenshot Guide</strong>
+          <ol>
+            <li>In GTKWave with tb_digital_lock waveform open</li>
+            <li>Navigate to TC3 region - the wrong sequence test (A→B→D)</li>
+            <li>
+              Show signals: <code>button_a</code>, <code>button_b</code>,
+              <code>button_d</code>, <code>current_state</code>,
+              <code>lock_status</code>
+            </li>
+            <li>
+              Screenshot should show: LOCKED→FIRST→SECOND (after A,B) then
+              immediately back to LOCKED when D is pressed
+            </li>
+            <li>
+              Ensure <code>lock_status</code> remains '0' throughout (never
+              unlocks)
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 9: Results & Synthesis -->
+    <section class="slide" id="slide-9">
+      <span class="slide-number">08</span>
+      <h3>Synthesis Results</h3>
+      <h2>FPGA Implementation</h2>
+      <p>
+        The design was verified for synthesizability using GHDL synthesis
+        checking. Resource utilization is minimal, ensuring compatibility with
+        any FPGA device.
+      </p>
+
+      <div class="two-column" style="margin-top: 2rem">
+        <div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Simulation</th>
+                <th>Hardware</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>DEBOUNCE_TIME</td>
+                <td>10 cycles</td>
+                <td>2,000,000 cycles</td>
+              </tr>
+              <tr>
+                <td>UNLOCK_TIME</td>
+                <td>5 cycles</td>
+                <td>500,000,000 cycles</td>
+              </tr>
+              <tr>
+                <td>Clock Frequency</td>
+                <td>N/A</td>
+                <td>100 MHz</td>
+              </tr>
+              <tr>
+                <td>Debounce Period</td>
+                <td>~100 ns</td>
+                <td>20 ms</td>
+              </tr>
+              <tr>
+                <td>Unlock Duration</td>
+                <td>~50 ns</td>
+                <td>5 seconds</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="card" style="margin-top: 2rem">
+            <h4>Estimated Resource Utilization</h4>
+            <ul class="feature-list" style="margin-top: 1rem">
+              <li>LUTs: ~50-100</li>
+              <li>Flip-Flops: ~30-50</li>
+              <li>Maximum Frequency: >200 MHz</li>
+              <li>Power: Minimal (simple logic)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="image-placeholder animate-in delay-2">
+          <span class="placeholder-title">Synthesis Check Output</span>
+          <p class="placeholder-desc">
+            Terminal output showing successful synthesis verification
+          </p>
+          <div class="placeholder-guide">
+            <strong>Screenshot Guide</strong>
+            <ol>
+              <li>Open a terminal in the project directory</li>
+              <li>Run: <code>./scripts/synth.sh</code></li>
+              <li>Wait for the script to complete</li>
+              <li>
+                Screenshot the terminal showing:
+                <ul style="margin-left: 1rem; margin-top: 0.25rem">
+                  <li>"Checking digital_lock..." → "✓ is synthesizable"</li>
+                  <li>"Checking button_debouncer..." → "✓ is synthesizable"</li>
+                  <li>"Checking top_level..." → "✓ is synthesizable"</li>
+                  <li>"Synthesis Check Passed!" message</li>
+                </ul>
+              </li>
+              <li>Crop to show the relevant output section</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 10: Conclusion -->
+    <section class="slide" id="slide-10">
+      <span class="slide-number">09</span>
+      <h3>Summary</h3>
+      <h2>Conclusions</h2>
+
+      <div class="two-column">
+        <div>
+          <p class="lead">
+            This project successfully demonstrates the application of finite
+            state machine methodology to implement a practical digital lock
+            system in VHDL.
+          </p>
+
+          <div class="card" style="margin-top: 2rem">
+            <h4>Key Achievements</h4>
+            <ul class="feature-list" style="margin-top: 1rem">
+              <li>
+                Implemented 5-state FSM using industry-standard 3-process
+                pattern
+              </li>
+              <li>
+                Developed robust button debouncing with metastability protection
+              </li>
+              <li>
+                Achieved 100% state and transition coverage in verification
+              </li>
+              <li>Verified synthesizability for FPGA deployment</li>
+              <li>
+                Created comprehensive documentation and test infrastructure
+              </li>
+            </ul>
+          </div>
+
+          <div class="card" style="margin-top: 1.5rem">
+            <h4>Learning Outcomes</h4>
+            <ul class="feature-list" style="margin-top: 1rem">
+              <li>FSM design methodology and state encoding</li>
+              <li>Synchronous digital design principles</li>
+              <li>Hardware verification techniques</li>
+              <li>VHDL coding best practices</li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <div class="image-placeholder animate-in delay-1">
+            <span class="placeholder-title">Complete Test Suite Output</span>
+            <p class="placeholder-desc">Terminal showing all tests passing</p>
+            <div class="placeholder-guide">
+              <strong>Screenshot Guide</strong>
+              <ol>
+                <li>Open terminal in project directory</li>
+                <li>Run: <code>./scripts/test.sh --no-wave</code></li>
+                <li>Wait for all 5 testbenches to complete</li>
+                <li>
+                  Screenshot the final summary showing:
+                  <ul style="margin-left: 1rem; margin-top: 0.25rem">
+                    <li>Total: 5</li>
+                    <li>Passed: 5</li>
+                    <li>Failed: 0</li>
+                    <li>"✓ All tests passed!"</li>
+                  </ul>
+                </li>
+                <li>
+                  Optionally include some of the individual test outputs above
+                </li>
+              </ol>
+            </div>
+          </div>
+
+          <div
+            style="
+              margin-top: 2rem;
+              padding: 2rem;
+              background: var(--bg-secondary);
+              border-left: 4px solid var(--accent-gold);
+            "
+          >
+            <h4 style="color: var(--accent-gold); margin-bottom: 1rem">
+              Project Repository
+            </h4>
+            <p style="font-size: 0.875rem; margin-bottom: 0.5rem">
+              Complete source code, documentation, and test infrastructure
+              available at:
+            </p>
+            <code style="color: var(--accent-copper); font-size: 0.8rem"
+              >pattern-based-digital-lock/</code
+            >
+            <ul
+              class="feature-list"
+              style="margin-top: 1rem; font-size: 0.8rem"
+            >
+              <li>src/ — VHDL source files</li>
+              <li>testbench/ — Verification testbenches</li>
+              <li>docs/ — Comprehensive documentation</li>
+              <li>scripts/ — Automation tools</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Computer-Aided Design Course</span>
+        <span>Pattern-Based Digital Lock Project</span>
+        <span>December 2025</span>
+      </div>
+    </section>
+
+    <script>
+      // Navigation active state
+      const navDots = document.querySelectorAll(".nav-dot");
+      const slides = document.querySelectorAll(".slide");
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.id;
+              navDots.forEach((dot) => {
+                dot.classList.remove("active");
+                if (dot.getAttribute("href") === `#${id}`) {
+                  dot.classList.add("active");
+                }
+              });
+            }
+          });
+        },
+        { threshold: 0.5 }
+      );
+
+      slides.forEach((slide) => observer.observe(slide));
+
+      // Smooth scroll for nav dots
+      navDots.forEach((dot) => {
+        dot.addEventListener("click", (e) => {
+          e.preventDefault();
+          const target = document.querySelector(dot.getAttribute("href"));
+          target.scrollIntoView({ behavior: "smooth" });
+        });
+      });
+
+      // Animate elements when they come into view
+      const animateObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.style.animationPlayState = "running";
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+
+      document.querySelectorAll(".animate-in").forEach((el) => {
+        el.style.animationPlayState = "paused";
+        animateObserver.observe(el);
+      });
+
+      // Keyboard navigation
+      document.addEventListener("keydown", (e) => {
+        const currentSlide = [...slides].findIndex((s) => {
+          const rect = s.getBoundingClientRect();
+          return rect.top >= 0 && rect.top < window.innerHeight / 2;
+        });
+
+        if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") {
+          e.preventDefault();
+          if (currentSlide < slides.length - 1) {
+            slides[currentSlide + 1].scrollIntoView({ behavior: "smooth" });
+          }
+        } else if (e.key === "ArrowUp" || e.key === "PageUp") {
+          e.preventDefault();
+          if (currentSlide > 0) {
+            slides[currentSlide - 1].scrollIntoView({ behavior: "smooth" });
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
