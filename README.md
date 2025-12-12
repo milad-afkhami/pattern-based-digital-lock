@@ -144,6 +144,31 @@ pattern-based-digital-lock/
 
 The lock operates as a 5-state Finite State Machine:
 
+```mermaid
+stateDiagram-v2
+    [*] --> LOCKED: Reset
+
+    LOCKED --> FIRST: Button A
+    LOCKED --> LOCKED: B, C, D (ignored)
+
+    FIRST --> SECOND: Button B
+    FIRST --> LOCKED: A, C, D (wrong)
+
+    SECOND --> THIRD: Button C
+    SECOND --> LOCKED: A, B, D (wrong)
+
+    THIRD --> UNLOCKED: Button A
+    THIRD --> LOCKED: B, C, D (wrong)
+
+    UNLOCKED --> LOCKED: Timeout
+
+    note right of LOCKED: lock_status = '0'
+    note right of UNLOCKED: lock_status = '1'
+```
+
+<details>
+<summary>Text-based diagram (if Mermaid doesn't render)</summary>
+
 ```
                     ┌──────────────────────────────────────────┐
                     │                                          │
@@ -156,6 +181,8 @@ The lock operates as a 5-state Finite State Machine:
          │                   │ Button            │ Button            │ Button             │
          └───────────────────┴───────────────────┴───────────────────┴────────────────────┘
 ```
+
+</details>
 
 <details>
 <summary>Understanding State Machines</summary>
@@ -171,6 +198,38 @@ The lock starts in LOCKED state and only reaches UNLOCKED by pressing buttons in
 </details>
 
 ### Unlock Sequence
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Debouncer
+    participant FSM
+    participant LED
+
+    Note over FSM: State: LOCKED
+    User->>Debouncer: Press A
+    Debouncer->>FSM: pulse_A
+    Note over FSM: State: FIRST
+
+    User->>Debouncer: Press B
+    Debouncer->>FSM: pulse_B
+    Note over FSM: State: SECOND
+
+    User->>Debouncer: Press C
+    Debouncer->>FSM: pulse_C
+    Note over FSM: State: THIRD
+
+    User->>Debouncer: Press A
+    Debouncer->>FSM: pulse_A
+    Note over FSM: State: UNLOCKED
+    FSM->>LED: lock_status = '1'
+    Note over LED: LED ON
+
+    Note over FSM: Timer expires...
+    Note over FSM: State: LOCKED
+    FSM->>LED: lock_status = '0'
+    Note over LED: LED OFF
+```
 
 | Step | Press | Current State | Next State |
 |------|-------|---------------|------------|

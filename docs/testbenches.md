@@ -24,6 +24,34 @@
 
 The test suite provides multiple levels of verification:
 
+```mermaid
+flowchart TB
+    subgraph "Unit Tests"
+        tb_lock[tb_digital_lock\nFSM Logic]
+        tb_deb[tb_debouncer\nDebounce Logic]
+    end
+
+    subgraph "Integration Tests"
+        tb_top[tb_top_level\nFull System]
+    end
+
+    subgraph "Coverage & Stress"
+        tb_cov[tb_fsm_coverage\n100% State Coverage]
+        tb_edge[tb_edge_cases\nBoundary Conditions]
+    end
+
+    tb_lock --> tb_top
+    tb_deb --> tb_top
+    tb_top --> tb_cov
+    tb_top --> tb_edge
+
+    style tb_lock fill:#e1f5fe
+    style tb_deb fill:#e1f5fe
+    style tb_top fill:#fff3e0
+    style tb_cov fill:#e8f5e9
+    style tb_edge fill:#fce4ec
+```
+
 | Level | Testbench | What It Tests |
 |-------|-----------|---------------|
 | Unit | `tb_digital_lock` | FSM controller in isolation |

@@ -45,6 +45,53 @@ Think of it like the "main()" function in software - it's where everything comes
 
 ## System Block Diagram
 
+```mermaid
+flowchart LR
+    subgraph Inputs
+        clk[clk]
+        reset[reset]
+        btnA[button_A_raw]
+        btnB[button_B_raw]
+        btnC[button_C_raw]
+        btnD[button_D_raw]
+    end
+
+    subgraph TOP_LEVEL
+        subgraph Debouncers
+            debA[Debouncer A]
+            debB[Debouncer B]
+            debC[Debouncer C]
+            debD[Debouncer D]
+        end
+
+        fsm[digital_lock\nFSM Controller]
+    end
+
+    subgraph Outputs
+        lock[lock_status]
+        led[led]
+    end
+
+    btnA --> debA
+    btnB --> debB
+    btnC --> debC
+    btnD --> debD
+
+    debA --> fsm
+    debB --> fsm
+    debC --> fsm
+    debD --> fsm
+
+    clk --> debA & debB & debC & debD & fsm
+    reset --> debA & debB & debC & debD & fsm
+
+    fsm --> lock
+    fsm --> led
+```
+
+<details>
+<summary>Text-based diagram (if Mermaid doesn't render)</summary>
+
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                              TOP_LEVEL                                       │
@@ -79,6 +126,8 @@ Think of it like the "main()" function in software - it's where everything comes
 │                                                                              │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+</details>
 
 ---
 

@@ -148,6 +148,38 @@ This creates a custom type with exactly 5 possible values. It's like an enum in 
 
 ### State Diagram
 
+```mermaid
+stateDiagram-v2
+    [*] --> STATE_LOCKED: Reset / Power-on
+
+    STATE_LOCKED --> STATE_FIRST: button_A = '1'
+    STATE_LOCKED --> STATE_LOCKED: button_B/C/D = '1'
+
+    STATE_FIRST --> STATE_SECOND: button_B = '1'
+    STATE_FIRST --> STATE_LOCKED: button_A/C/D = '1'
+
+    STATE_SECOND --> STATE_THIRD: button_C = '1'
+    STATE_SECOND --> STATE_LOCKED: button_A/B/D = '1'
+
+    STATE_THIRD --> STATE_UNLOCKED: button_A = '1'
+    STATE_THIRD --> STATE_LOCKED: button_B/C/D = '1'
+
+    STATE_UNLOCKED --> STATE_LOCKED: timer_expired = '1'
+
+    note right of STATE_LOCKED
+        lock_status = '0'
+        Initial state
+    end note
+
+    note right of STATE_UNLOCKED
+        lock_status = '1'
+        Timer active
+    end note
+```
+
+<details>
+<summary>Text-based diagram (if Mermaid doesn't render)</summary>
+
 ```
                                     ┌─────────────────────────┐
                                     │         RESET           │
@@ -199,6 +231,8 @@ This creates a custom type with exactly 5 possible values. It's like an enum in 
                                   ▼
                           Back to STATE_LOCKED
 ```
+
+</details>
 
 ### Transition Table
 
