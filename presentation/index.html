@@ -1353,36 +1353,10 @@
           <p class="placeholder-desc">
             Shows state transitions during successful A→B→C→A sequence
           </p>
-          <div class="placeholder-guide">
-            <strong>Screenshot Guide</strong>
-            <ol>
-              <li>
-                Run the FSM test: <code>./scripts/test.sh tb_digital_lock</code>
-              </li>
-              <li>
-                Open GTKWave: <code>./scripts/wave.sh tb_digital_lock</code>
-              </li>
-              <li>
-                Add these signals (in order):
-                <ul style="margin-left: 1rem; margin-top: 0.25rem">
-                  <li><code>clk</code></li>
-                  <li><code>reset</code></li>
-                  <li><code>button_a</code></li>
-                  <li><code>button_b</code></li>
-                  <li><code>button_c</code></li>
-                  <li><code>current_state</code></li>
-                  <li><code>lock_status</code></li>
-                </ul>
-              </li>
-              <li>
-                Navigate to TC2 (around 100-200ns) - the correct sequence test
-              </li>
-              <li>Zoom to show all 4 button presses and state changes</li>
-              <li>
-                Screenshot should show: LOCKED→FIRST→SECOND→THIRD→UNLOCKED
-              </li>
-            </ol>
-          </div>
+          <img
+            src="./assets/Correct-Unlock-Sequence.png"
+            style="width: 100%; height: auto"
+          />
         </div>
 
         <div class="image-placeholder animate-in delay-2">
@@ -1390,27 +1364,10 @@
           <p class="placeholder-desc">
             Demonstrates automatic re-locking after timeout
           </p>
-          <div class="placeholder-guide">
-            <strong>Screenshot Guide</strong>
-            <ol>
-              <li>Using same GTKWave session from above</li>
-              <li>
-                Add signal: <code>unlock_timer</code> (from uut hierarchy)
-              </li>
-              <li>Navigate to TC5 region - the auto-relock test</li>
-              <li>
-                Zoom to show:
-                <ul style="margin-left: 1rem; margin-top: 0.25rem">
-                  <li>State reaching UNLOCKED</li>
-                  <li><code>lock_status</code> going HIGH</li>
-                  <li><code>unlock_timer</code> counting up (0,1,2,3,4,5)</li>
-                  <li>State returning to LOCKED</li>
-                  <li><code>lock_status</code> going LOW</li>
-                </ul>
-              </li>
-              <li>Screenshot the complete auto-relock cycle</li>
-            </ol>
-          </div>
+          <img
+            src="./assets/Auto-Relock-Timer.png"
+            style="width: 100%; height: auto"
+          />
         </div>
       </div>
 
