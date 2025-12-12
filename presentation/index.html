@@ -499,7 +499,6 @@
         width: 100%;
         border-collapse: collapse;
         font-size: 0.875rem;
-        margin-top: 1.5rem;
       }
 
       .data-table th {
@@ -599,6 +598,7 @@
       }
 
       .feature-list li {
+        font-size: 12px;
         padding: 0.75rem 0;
         padding-left: 2rem;
         position: relative;
@@ -749,6 +749,60 @@
 
       .magnifier-lens.active {
         opacity: 1;
+      }
+
+      /* Fullscreen Image */
+      .fullscreenable {
+        cursor: pointer;
+      }
+
+      .fullscreen-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        cursor: zoom-out;
+      }
+
+      .fullscreen-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .fullscreen-overlay img {
+        max-width: 95vw;
+        max-height: 95vh;
+        object-fit: contain;
+        border: 2px solid var(--accent-copper);
+        box-shadow: 0 0 60px rgba(0, 0, 0, 0.8), 0 0 20px var(--glow-copper);
+      }
+
+      .fullscreen-close {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        width: 48px;
+        height: 48px;
+        border: 2px solid var(--accent-copper);
+        background: var(--bg-secondary);
+        color: var(--accent-copper);
+        font-size: 1.5rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+      }
+
+      .fullscreen-close:hover {
+        background: var(--accent-copper);
+        color: var(--bg-primary);
       }
 
       /* Architecture diagram */
@@ -1047,30 +1101,31 @@
             </tbody>
           </table>
         </div>
-        <div
-          class="animate-in delay-2"
-          style="
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-          "
-        >
-          <img
-            src="./assets/FSM-State-Diagram.png"
-            style="max-height: 80vh; width: auto"
-            alt="FSM State Diagram"
-          />
-          <a
-            href="https://www.mermaidchart.com/play?utm_source=mermaid_live_editor&utm_medium=toggle#pako:eNqNkl1rgzAUhv_KwRthEFx3KWzg15hstEPd1Swl6KkNajI0dhtj_30zTppqW5Zc5ZzzvE8I-TIykaNhG4SQlGeCb1lhpxxA7rBGGzgKktOm7EuVEKWqqAP9FJ20AavfnoJbSSX6jBYNrcn-ph8CeL1aAyF3ECdOEmyeVt5j4NsQYYsSLHgW79gQwVO1-3l9TgPvwyhObHA7KQUHB27BXJgXiVH1h7iWZ_kjpoMqWePiwFstNW6umhITk3PONCRrYPIQRgfOm5tmxEzlnlapZI17WU7JuWzK_PcBx-wTaMJqbCD4eGMN5scsFxKhYcVOgtgeYUO_X5XIyk3_q7q2h6_NQyvkTDJagfpzQxl5rlIvGca7nnUsNMdwe5pJtp8ojO8fuZ3qcA"
-            style="
-              display: block;
-              margin-top: 0.5rem;
-              font-size: 0.75rem;
-              color: var(--text-muted);
-            "
-            >View Full Diagram</a
-          >
+        <div class="animate-in delay-2">
+          <div class="image-placeholder">
+            <span class="placeholder-title">Debouncer Flow Diagram</span>
+            <p class="placeholder-desc">
+              Processing flow from raw input through synchronizer, counter, and
+              edge detector to clean pulse output
+            </p>
+
+            <img
+              src="./assets/FSM-State-Diagram.png"
+              style="max-height: 60vh; width: auto"
+              alt="FSM State Diagram"
+              class="fullscreenable"
+            />
+            <a
+              href="https://www.mermaidchart.com/play?utm_source=mermaid_live_editor&utm_medium=toggle#pako:eNqNkl1rgzAUhv_KwRthEFx3KWzg15hstEPd1Swl6KkNajI0dhtj_30zTppqW5Zc5ZzzvE8I-TIykaNhG4SQlGeCb1lhpxxA7rBGGzgKktOm7EuVEKWqqAP9FJ20AavfnoJbSSX6jBYNrcn-ph8CeL1aAyF3ECdOEmyeVt5j4NsQYYsSLHgW79gQwVO1-3l9TgPvwyhObHA7KQUHB27BXJgXiVH1h7iWZ_kjpoMqWePiwFstNW6umhITk3PONCRrYPIQRgfOm5tmxEzlnlapZI17WU7JuWzK_PcBx-wTaMJqbCD4eGMN5scsFxKhYcVOgtgeYUO_X5XIyk3_q7q2h6_NQyvkTDJagfpzQxl5rlIvGca7nnUsNMdwe5pJtp8ojO8fuZ3qcA"
+              style="
+                display: block;
+                margin-top: 0.5rem;
+                font-size: 0.75rem;
+                color: var(--text-muted);
+              "
+              >View Full Diagram</a
+            >
+          </div>
         </div>
       </div>
     </section>
@@ -1204,19 +1259,19 @@
             </table>
           </div>
         </div>
-        <div
-          class="animate-in delay-2"
-          style="
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-          "
-        >
-          <img
-            src="./assets/Bounce-vs-Debounced-Signal.png"
-            style="max-width: 60vw; height: auto"
-          />
+        <div class="animate-in delay-2">
+          <div class="image-placeholder">
+            <span class="placeholder-title">Bounce vs. Debounced Signal</span>
+            <p class="placeholder-desc">
+              Timing diagram comparing raw bouncy input with filtered stable
+              output
+            </p>
+            <img
+              src="./assets/Bounce-vs-Debounced-Signal.png"
+              style="max-width: 60vw; height: auto"
+              class="fullscreenable"
+            />
+          </div>
         </div>
       </div>
     </section>
@@ -1410,7 +1465,7 @@
         behavior across all operational scenarios.
       </p>
 
-      <div class="two-column" style="margin-top: 2rem">
+      <div class="three-column" style="margin-top: 2rem">
         <div class="image-placeholder animate-in delay-1">
           <span class="placeholder-title">
             Correct Unlock Sequence Waveform
@@ -1421,6 +1476,7 @@
           <img
             src="./assets/Correct-Unlock-Sequence.png"
             style="width: 100%; height: auto"
+            class="fullscreenable"
           />
         </div>
 
@@ -1432,22 +1488,23 @@
           <img
             src="./assets/Auto-Relock-Timer.png"
             style="width: 100%; height: auto"
+            class="fullscreenable"
           />
         </div>
-      </div>
 
-      <div
-        class="image-placeholder animate-in delay-3"
-        style="margin-top: 2rem"
-      >
-        <span class="placeholder-title">Wrong Sequence Detection Waveform</span>
-        <p class="placeholder-desc">
-          Shows FSM returning to LOCKED state on incorrect button press
-        </p>
-        <img
-          src="./assets/Wrong-Sequence-Detection-Waveform.png"
-          style="width: 100%; height: auto"
-        />
+        <div class="image-placeholder animate-in delay-3">
+          <span class="placeholder-title"
+            >Wrong Sequence Detection Waveform</span
+          >
+          <p class="placeholder-desc">
+            Shows FSM returning to LOCKED state on incorrect button press
+          </p>
+          <img
+            src="./assets/Wrong-Sequence-Detection-Waveform.png"
+            style="width: 100%; height: auto"
+            class="fullscreenable"
+          />
+        </div>
       </div>
     </section>
 
@@ -1456,13 +1513,13 @@
       <span class="slide-number">08</span>
       <h3>Synthesis Results</h3>
       <h2>FPGA Implementation</h2>
-      <p>
+      <p style="max-width: none">
         The design was verified for synthesizability using GHDL synthesis
         checking. Resource utilization is minimal, ensuring compatibility with
         any FPGA device.
       </p>
 
-      <div class="two-column" style="margin-top: 2rem">
+      <div class="two-column">
         <div>
           <table class="data-table">
             <thead>
@@ -1534,7 +1591,7 @@
       <h2>Conclusions</h2>
 
       <div class="two-column">
-        <div>
+        <div style="height: 100%">
           <p class="lead">
             This project successfully demonstrates the application of finite
             state machine methodology to implement a practical digital lock
@@ -1580,6 +1637,7 @@
               <img
                 src="./assets/Complete-Test-Suite-Output.png"
                 style="width: 40vw; height: auto"
+                class="fullscreenable"
               />
             </div>
           </div>
@@ -1750,6 +1808,39 @@
           lens.classList.remove("active");
         });
       });
+
+      // Fullscreen Image functionality
+      (function initFullscreen() {
+        // Create overlay element once
+        const overlay = document.createElement("div");
+        overlay.className = "fullscreen-overlay";
+        overlay.innerHTML = `
+          <button class="fullscreen-close">×</button>
+          <img src="" alt="Fullscreen view" />
+        `;
+        document.body.appendChild(overlay);
+
+        const overlayImg = overlay.querySelector("img");
+        const closeBtn = overlay.querySelector(".fullscreen-close");
+
+        // Close handlers
+        const closeFullscreen = () => overlay.classList.remove("active");
+        closeBtn.addEventListener("click", closeFullscreen);
+        overlay.addEventListener("click", (e) => {
+          if (e.target === overlay) closeFullscreen();
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") closeFullscreen();
+        });
+
+        // Open fullscreen on click
+        document.querySelectorAll(".fullscreenable").forEach((img) => {
+          img.addEventListener("click", () => {
+            overlayImg.src = img.src;
+            overlay.classList.add("active");
+          });
+        });
+      })();
     </script>
   </body>
 </html>
