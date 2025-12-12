@@ -904,8 +904,7 @@
             src="./assets/System-Block-Diagram.png"
             style="max-width: 50vw; height: auto"
             alt="System Block Diagram"
-            class="magnifiable"
-            data-zoom="1.5"
+            class="fullscreenable"
           />
           <a
             href="https://www.mermaidchart.com/play?utm_source=mermaid_live_editor&utm_medium=toggle#pako:eNqVkl1vgyAUhv_KCRfe-Qe8WCLQJUtcurTNbmaz-HH6kVJoENYsy_77QFsV6824EZ-H83pAfkilaiQJieM4l5WSu-M-ySWAOeAZE5Co4rrQJ4-EUqeWtC_Ft7ImARTOtcU7oa7VodAGspVb0dhyr4vLAV7kxZrmIyfdJCdbX9-N0sjUGWqNURJSWBXXqaeDp3OeDZ7NeT54PvIo63GTHEtlZYXaNzq8BGE1lunYQjrVNNB0qlmg2VTzQPP5RjfLt89s8b7I3OKNukCGXyiCpFH3Pds1Zx9-3B9NISBT1WlwfjyvX4EpabQSAvX8l5fW3H7kbRZ8VbhMp3w0rE1h7ERj7e0i3NXtBkAcP7Wn2yN6R7RH7I5Yj_gd8Q75iBa57faEPhD2QHhIKuG3wtzNJtu-N4i6tKiLiLq6aKjS2KBxdSv__Felm7SL_Rk67s6K_P4BKSwUDA"
@@ -915,6 +914,7 @@
               font-size: 0.75rem;
               color: var(--text-muted);
             "
+            target="_blank"
             >View Full Diagram</a
           >
         </div>
@@ -1125,6 +1125,7 @@
                 font-size: 0.75rem;
                 color: var(--text-muted);
               "
+              target="_blank"
               >View Full Diagram</a
             >
           </div>
@@ -1210,6 +1211,7 @@
                   font-size: 0.75rem;
                   color: var(--text-muted);
                 "
+                target="_blank"
                 >View Full Diagram</a
               >
             </div>
@@ -1291,7 +1293,7 @@
 
       <div class="two-column" style="margin-top: 2rem">
         <div>
-          <div class="code-block" data-lang="VHDL">
+          <div class="code-block animate-in delay-1" data-lang="VHDL">
             <code>
               <span class="code-comment">-- State type definition</span>
               <br />
@@ -1311,7 +1313,11 @@
             </code>
           </div>
 
-          <div class="code-block" data-lang="VHDL" style="margin-top: 1rem">
+          <div
+            class="code-block animate-in delay-2"
+            data-lang="VHDL"
+            style="margin-top: 1rem"
+          >
             <code>
               <span class="code-comment"
                 >-- Process 1: State Register (Sequential)</span
@@ -1334,7 +1340,7 @@
           </div>
         </div>
         <div>
-          <div class="code-block" data-lang="VHDL">
+          <div class="code-block animate-in delay-3" data-lang="VHDL">
             <code>
               <span class="code-comment"
                 >-- Process 2: Next State Logic (Combinational)</span
@@ -1388,13 +1394,13 @@
       <span class="slide-number">06</span>
       <h3>Design Verification</h3>
       <h2>Test Methodology</h2>
-      <p>
+      <p style="max-width: none">
         Comprehensive verification was conducted using GHDL simulation with 5
         testbenches covering unit testing, integration testing, coverage
         analysis, and edge case validation.
       </p>
 
-      <div class="stats-grid animate-in delay-1">
+      <div class="stats-grid animate-in delay-1" style="margin-top: 0">
         <div class="stat-item">
           <div class="stat-value">5</div>
           <div class="stat-label">Testbenches</div>
@@ -1632,14 +1638,14 @@
       <h3>Summary</h3>
       <h2>Conclusions</h2>
 
+      <p class="lead" style="max-width: none">
+        This project successfully demonstrates the application of finite state
+        machine methodology to implement a practical digital lock system in
+        VHDL.
+      </p>
+
       <div class="two-column">
         <div>
-          <p class="lead">
-            This project successfully demonstrates the application of finite
-            state machine methodology to implement a practical digital lock
-            system in VHDL.
-          </p>
-
           <div class="card" style="margin-top: 2rem">
             <h4>Key Achievements</h4>
             <ul class="feature-list" style="margin-top: 1rem">
