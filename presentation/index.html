@@ -755,6 +755,7 @@
         color: var(--text-muted);
         font-size: 1.25rem;
       }
+
     </style>
   </head>
   <body>
@@ -767,6 +768,7 @@
       <a href="#slide-3" class="nav-dot" data-label="Architecture"></a>
       <a href="#slide-4" class="nav-dot" data-label="FSM Design"></a>
       <a href="#slide-5" class="nav-dot" data-label="Debouncing"></a>
+      <a href="#slide-5b" class="nav-dot" data-label="Debounce Demo"></a>
       <a href="#slide-6" class="nav-dot" data-label="Implementation"></a>
       <a href="#slide-7" class="nav-dot" data-label="Verification"></a>
       <a href="#slide-8" class="nav-dot" data-label="Waveforms"></a>
@@ -1024,9 +1026,9 @@
             clean, single-cycle pulses to the FSM.
           </p>
 
-          <div class="card" style="margin-top: 2rem">
+          <div class="card" style="margin-top: 1.5rem">
             <h4>Debouncer Architecture</h4>
-            <ul class="feature-list" style="margin-top: 1rem">
+            <ul class="feature-list" style="margin-top: 0.75rem">
               <li>
                 <strong>2-Stage Synchronizer:</strong> Prevents metastability
                 from asynchronous inputs
@@ -1042,18 +1044,15 @@
             </ul>
           </div>
 
-          <div class="code-block" data-lang="VHDL" style="margin-top: 2rem">
+          <div class="code-block" data-lang="VHDL" style="margin-top: 1.5rem">
             <code>
-              <span class="code-comment"
-                >-- Edge detection: generate pulse on rising edge</span
-              >
+              <span class="code-comment">-- Edge detection: rising edge only</span>
               <span class="code-keyword">if</span> button_stable =
               <span class="code-string">'1'</span>
               <span class="code-keyword">and</span> button_prev =
               <span class="code-string">'0'</span>
-              <span class="code-keyword">then</span> button_out <=
-              <span class="code-string">'1'</span>;
-              <span class="code-comment">-- Rising edge detected</span>
+              <span class="code-keyword">then</span>
+              button_out <= <span class="code-string">'1'</span>;
               <span class="code-keyword">else</span>
               button_out <= <span class="code-string">'0'</span>;
               <span class="code-keyword">end if</span>;
@@ -1064,7 +1063,7 @@
           <div class="image-placeholder">
             <span class="placeholder-title">Debouncer Flow Diagram</span>
             <p class="placeholder-desc">
-              Processing flow from raw input to clean pulse output
+              Processing flow from raw input through synchronizer, counter, and edge detector to clean pulse output
             </p>
             <div class="placeholder-guide">
               <strong>Screenshot Guide</strong>
@@ -1079,19 +1078,62 @@
                 <li>Screenshot the flowchart diagram</li>
                 <li>
                   Replace placeholder with:
-                  <code>&lt;img src="images/debouncer-flow.png"&gt;</code>
+                  <code>&lt;img src="assets/debouncer-flow.png"&gt;</code>
                 </li>
               </ol>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
 
-          <div
-            class="image-placeholder"
-            style="margin-top: 2rem; min-height: 200px"
-          >
+    <!-- Slide 5b: Debouncing Waveform -->
+    <section class="slide" id="slide-5b">
+      <span class="slide-number">04b</span>
+      <div class="two-column">
+        <div>
+          <h3>Input Processing</h3>
+          <h2>Debounce in Action</h2>
+          <p>
+            The waveform demonstrates how the debouncer transforms a noisy, bouncing
+            button signal into a clean single-cycle pulse that the FSM can reliably process.
+          </p>
+
+          <div class="card" style="margin-top: 1.5rem">
+            <h4>Signal Transformation</h4>
+            <table class="data-table" style="margin-top: 0.75rem">
+              <thead>
+                <tr>
+                  <th>Signal</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>button_in</code></td>
+                  <td>Raw input with bounce noise</td>
+                </tr>
+                <tr>
+                  <td><code>button_stable</code></td>
+                  <td>Filtered stable value</td>
+                </tr>
+                <tr>
+                  <td><code>button_out</code></td>
+                  <td>Single-cycle output pulse</td>
+                </tr>
+                <tr>
+                  <td><code>counter</code></td>
+                  <td>Stability counter value</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="animate-in delay-2">
+          <div class="image-placeholder">
             <span class="placeholder-title">Bounce vs. Debounced Signal</span>
             <p class="placeholder-desc">
-              Timing diagram comparing raw and filtered signals
+              Timing diagram comparing raw bouncy input with filtered stable output
             </p>
             <div class="placeholder-guide">
               <strong>Screenshot Guide</strong>
