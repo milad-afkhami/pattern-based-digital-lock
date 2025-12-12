@@ -1,0 +1,19 @@
+# Simulation waveform files (too large for GitHub)
+*.ghw
+
+# GHDL work files
+*.cf
+work-obj*.cf
+
+# Compiled binaries
+simulation/tb_*
+!simulation/tb_*.vhd
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
