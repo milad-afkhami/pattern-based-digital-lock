@@ -35,6 +35,9 @@
 
         /* Spacing */
         --slide-padding: clamp(2rem, 5vw, 4rem);
+
+        /* Magnifier */
+        --magnifier-lens-size: 300px;
       }
 
       *,
@@ -719,6 +722,35 @@
         gap: 2rem;
       }
 
+      /* Image Magnifier */
+      .magnifiable {
+        cursor: zoom-in;
+      }
+
+      .magnifier-wrapper {
+        position: relative;
+        display: inline-block;
+      }
+
+      .magnifier-lens {
+        position: absolute;
+        border: 3px solid var(--accent-copper);
+        border-radius: 50%;
+        width: var(--magnifier-lens-size, 300px);
+        height: var(--magnifier-lens-size, 300px);
+        background-color: #333;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s ease;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), 0 0 10px var(--glow-copper);
+        z-index: 1000;
+        background-repeat: no-repeat;
+      }
+
+      .magnifier-lens.active {
+        opacity: 1;
+      }
+
       /* Architecture diagram */
       .arch-diagram {
         display: flex;
@@ -816,6 +848,8 @@
             src="./assets/System-Block-Diagram.png"
             style="max-width: 50vw; height: auto"
             alt="System Block Diagram"
+            class="magnifiable"
+            data-zoom="1.5"
           />
           <a
             href="https://www.mermaidchart.com/play?utm_source=mermaid_live_editor&utm_medium=toggle#pako:eNqVkl1vgyAUhv_KCRfe-Qe8WCLQJUtcurTNbmaz-HH6kVJoENYsy_77QFsV6824EZ-H83pAfkilaiQJieM4l5WSu-M-ySWAOeAZE5Co4rrQJ4-EUqeWtC_Ft7ImARTOtcU7oa7VodAGspVb0dhyr4vLAV7kxZrmIyfdJCdbX9-N0sjUGWqNURJSWBXXqaeDp3OeDZ7NeT54PvIo63GTHEtlZYXaNzq8BGE1lunYQjrVNNB0qlmg2VTzQPP5RjfLt89s8b7I3OKNukCGXyiCpFH3Pds1Zx9-3B9NISBT1WlwfjyvX4EpabQSAvX8l5fW3H7kbRZ8VbhMp3w0rE1h7ERj7e0i3NXtBkAcP7Wn2yN6R7RH7I5Yj_gd8Q75iBa57faEPhD2QHhIKuG3wtzNJtu-N4i6tKiLiLq6aKjS2KBxdSv__Felm7SL_Rk67s6K_P4BKSwUDA"
@@ -1108,6 +1142,8 @@
               <img
                 src="./assets/Processing-Flow.png"
                 style="height: 60vh; width: auto"
+                class="magnifiable"
+                data-zoom="2"
               />
               <a
                 href="https://www.mermaidchart.com/play?utm_source=mermaid_live_editor&utm_medium=toggle#pako:eNp1kstuwjAQRX9l6i7YNFJggdRIQHkkvFQq8VBVkQqFZAIRxkaOU0oR_17HiYK7aHYz957xtSdXEvIIiUMsy_JZyFmc7ByfAcg9HtEBhtyKAnHIW5Tzg-7oIrjwTDqAVGkajik_h_tASFj2cgdAd-2TbSYlZ5uEFa38mwdnGLNTJn3yCZbVhp7yNayFDHZ4dy0uLNwLzpIfFMpYCD3t7199ogdAlMQxCmTyzsWCHyGVwZZixye3QugrDj4w1fhgneOhUBc0wT7PmDTO0syMa8RVyBxTlJWrwiQHu2IG2u2pfKUP2i0YuL231azvbpbjV_eeyTMzDdUBq1MUSITyxYorVJM9I81Imd-DRELMhdrHt4SQ8vBQeYfaNVYp5kmasB1gtMNO-Sit-hOcBH617CqJW_iLYmQWYzPj5OWq1r5F6kC1V_UPQAtq9ZpvbE4dSRFOGU3xwSdwM2aVN5j-P8quFUgBpfKiRnUhTih1Hrtd2_Y8U5mUSuO52firTEvF85oD2ya3X4kL2S0"
@@ -1654,6 +1690,65 @@
             slides[currentSlide - 1].scrollIntoView({ behavior: "smooth" });
           }
         }
+      });
+
+      // Image Magnifier functionality
+      document.querySelectorAll(".magnifiable").forEach((img) => {
+        // Create wrapper
+        const wrapper = document.createElement("div");
+        wrapper.className = "magnifier-wrapper";
+        img.parentNode.insertBefore(wrapper, img);
+        wrapper.appendChild(img);
+
+        // Create lens element
+        const lens = document.createElement("div");
+        lens.className = "magnifier-lens";
+        wrapper.appendChild(lens);
+
+        const zoom = parseFloat(img.dataset.zoom) || 2;
+        const lensSize =
+          parseFloat(
+            getComputedStyle(img).getPropertyValue("--magnifier-lens-size")
+          ) || 300;
+
+        // Preload the background image
+        lens.style.backgroundImage = `url('${img.src}')`;
+
+        wrapper.addEventListener("mouseenter", () => {
+          lens.classList.add("active");
+        });
+
+        wrapper.addEventListener("mousemove", (e) => {
+          const rect = img.getBoundingClientRect();
+
+          // Calculate cursor position relative to image
+          let x = e.clientX - rect.left;
+          let y = e.clientY - rect.top;
+
+          // Clamp to image bounds
+          x = Math.max(0, Math.min(x, rect.width));
+          y = Math.max(0, Math.min(y, rect.height));
+
+          // Position the lens centered on cursor
+          const lensX = x - lensSize / 2;
+          const lensY = y - lensSize / 2;
+          lens.style.left = `${lensX}px`;
+          lens.style.top = `${lensY}px`;
+
+          // Calculate background position and size
+          const bgWidth = rect.width * zoom;
+          const bgHeight = rect.height * zoom;
+          lens.style.backgroundSize = `${bgWidth}px ${bgHeight}px`;
+
+          // Position background to show magnified area
+          const bgX = -(x * zoom - lensSize / 2);
+          const bgY = -(y * zoom - lensSize / 2);
+          lens.style.backgroundPosition = `${bgX}px ${bgY}px`;
+        });
+
+        wrapper.addEventListener("mouseleave", () => {
+          lens.classList.remove("active");
+        });
       });
     </script>
   </body>
