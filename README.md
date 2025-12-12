@@ -75,10 +75,27 @@ brew install --cask gtkwave
 
 ### Run Your First Simulation
 
+**Using Scripts (Recommended):**
+
 ```bash
 # Navigate to project directory
 cd pattern-based-digital-lock
 
+# Install dependencies (first time only)
+./scripts/install.sh
+
+# Build and test
+./scripts/build.sh
+./scripts/test.sh
+
+# View waveforms (optional)
+./scripts/wave.sh
+```
+
+<details>
+<summary>Manual commands (if you prefer)</summary>
+
+```bash
 # Compile all source files
 ghdl -a --std=08 src/digital_lock.vhd
 ghdl -a --std=08 src/button_debouncer.vhd
@@ -89,12 +106,14 @@ ghdl -a --std=08 testbench/tb_digital_lock.vhd
 ghdl -e --std=08 tb_digital_lock
 ghdl -r --std=08 tb_digital_lock --wave=simulation/tb_digital_lock.ghw
 
-# View results (optional)
+# View results
 gtkwave simulation/tb_digital_lock.ghw
 ```
 
+</details>
+
 <details>
-<summary>What do these commands mean?</summary>
+<summary>What do the GHDL commands mean?</summary>
 
 - `ghdl -a`: **Analyze** (compile) a VHDL file, checking for syntax errors
 - `ghdl -e`: **Elaborate** (link) a design, preparing it for simulation
@@ -112,6 +131,14 @@ gtkwave simulation/tb_digital_lock.ghw
 pattern-based-digital-lock/
 ├── README.md                 # This file
 ├── PRD.md                    # Product Requirements Document
+├── scripts/                  # Automation scripts
+│   ├── README.md
+│   ├── install.sh            # Install dependencies
+│   ├── build.sh              # Compile source files
+│   ├── test.sh               # Run testbenches
+│   ├── synth.sh              # Check synthesizability
+│   ├── wave.sh               # Open waveform viewer
+│   └── clean.sh              # Remove generated files
 ├── src/                      # Source VHDL files
 │   ├── README.md
 │   ├── digital_lock.vhd      # Main FSM controller
@@ -248,7 +275,30 @@ sequenceDiagram
 
 ## Building and Running
 
-### Compile All Files
+### Using Scripts (Recommended)
+
+```bash
+# Build all source files
+./scripts/build.sh
+
+# Run all tests
+./scripts/test.sh
+
+# Run a specific test
+./scripts/test.sh tb_digital_lock
+
+# Run tests without waveform generation (faster)
+./scripts/test.sh --no-wave
+
+# View waveforms
+./scripts/wave.sh tb_digital_lock
+
+# Clean build artifacts
+./scripts/clean.sh
+```
+
+<details>
+<summary>Manual compilation commands</summary>
 
 ```bash
 # Analyze (compile) source files in dependency order
@@ -262,7 +312,13 @@ ghdl -a --std=08 testbench/tb_top_level.vhd
 ghdl -a --std=08 testbench/tb_fsm_coverage.vhd
 ghdl -a --std=08 testbench/tb_edge_cases.vhd
 ghdl -a --std=08 testbench/tb_debouncer.vhd
+
+# Elaborate and run
+ghdl -e --std=08 tb_digital_lock
+ghdl -r --std=08 tb_digital_lock --wave=simulation/tb_digital_lock.ghw
 ```
+
+</details>
 
 <details>
 <summary>Why compile in this order?</summary>
@@ -276,28 +332,6 @@ VHDL files must be compiled in dependency order:
 If you compile out of order, you'll get "component not found" errors.
 
 </details>
-
-### Run a Simulation
-
-```bash
-# Elaborate (link) the testbench
-ghdl -e --std=08 tb_digital_lock
-
-# Run simulation and generate waveform
-ghdl -r --std=08 tb_digital_lock --wave=simulation/tb_digital_lock.ghw
-```
-
-### Run All Tests
-
-```bash
-# Quick test script
-for tb in tb_digital_lock tb_top_level tb_fsm_coverage tb_edge_cases tb_debouncer; do
-    echo "=== Running $tb ==="
-    ghdl -e --std=08 $tb
-    ghdl -r --std=08 $tb --wave=simulation/$tb.ghw
-    echo ""
-done
-```
 
 ---
 
@@ -360,6 +394,10 @@ If you see "PASSED" at the end, all tests succeeded!
 ### Check Synthesizability
 
 ```bash
+# Using script (recommended)
+./scripts/synth.sh
+
+# Or manually
 ghdl -a --std=08 src/digital_lock.vhd
 ghdl -a --std=08 src/button_debouncer.vhd
 ghdl -a --std=08 src/top_level.vhd
@@ -493,6 +531,19 @@ Detailed documentation for each component is available in the [docs/](docs/) dir
 - [button_debouncer.md](docs/button_debouncer.md) - Debounce circuit design
 - [top_level.md](docs/top_level.md) - System integration and configuration
 - [testbenches.md](docs/testbenches.md) - Test suite documentation
+
+### Scripts Reference
+
+Automation scripts are in [scripts/](scripts/):
+
+| Script | Description |
+|--------|-------------|
+| `install.sh` | Install GHDL and GTKWave |
+| `build.sh` | Compile source files |
+| `test.sh` | Run testbenches |
+| `synth.sh` | Check synthesizability |
+| `wave.sh` | Open waveform viewer |
+| `clean.sh` | Remove generated files |
 
 ---
 
