@@ -858,6 +858,7 @@
       <a href="#slide-7" class="nav-dot" data-label="Verification"></a>
       <a href="#slide-8" class="nav-dot" data-label="Waveforms"></a>
       <a href="#slide-9" class="nav-dot" data-label="Results"></a>
+      <a href="#slide-9b" class="nav-dot" data-label="Resources"></a>
       <a href="#slide-10" class="nav-dot" data-label="Conclusion"></a>
       <a href="#slide-11" class="nav-dot" data-label="Repository"></a>
     </nav>
@@ -1509,7 +1510,7 @@
       </div>
     </section>
 
-    <!-- Slide 9: Results & Synthesis -->
+    <!-- Slide 9: Synthesis Results -->
     <section class="slide" id="slide-9">
       <span class="slide-number">08</span>
       <h3>Synthesis Results</h3>
@@ -1558,16 +1559,6 @@
               </tr>
             </tbody>
           </table>
-
-          <div class="card" style="margin-top: 2rem">
-            <h4>Estimated Resource Utilization</h4>
-            <ul class="feature-list" style="margin-top: 1rem">
-              <li>LUTs: ~50-100</li>
-              <li>Flip-Flops: ~30-50</li>
-              <li>Maximum Frequency: >200 MHz</li>
-              <li>Power: Minimal (simple logic)</li>
-            </ul>
-          </div>
         </div>
 
         <div class="image-placeholder animate-in delay-2">
@@ -1575,11 +1566,62 @@
           <p class="placeholder-desc">
             Terminal output showing successful synthesis verification
           </p>
-          <div class="animate-in delay-2">
-            <img
-              src="./assets/Synthesis-Check-Output.png"
-              style="width: 100%; height: auto"
-            />
+          <img
+            src="./assets/Synthesis-Check-Output.png"
+            style="width: 100%; height: auto"
+            class="fullscreenable"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 9b: Resource Utilization -->
+    <section class="slide" id="slide-9b">
+      <span class="slide-number">08b</span>
+      <h3>Synthesis Results</h3>
+      <h2>Resource Utilization</h2>
+
+      <div class="two-column">
+        <div>
+          <div class="card">
+            <h4>Estimated FPGA Resources</h4>
+            <ul class="feature-list" style="margin-top: 1rem">
+              <li>LUTs: ~50-100</li>
+              <li>Flip-Flops: ~30-50</li>
+              <li>Maximum Frequency: >200 MHz</li>
+              <li>Power: Minimal (simple logic)</li>
+            </ul>
+          </div>
+
+          <div class="card" style="margin-top: 2rem">
+            <h4>Design Characteristics</h4>
+            <ul class="feature-list" style="margin-top: 1rem">
+              <li>Fully synchronous design</li>
+              <li>Single clock domain</li>
+              <li>No latches or combinational loops</li>
+              <li>Clean reset behavior</li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr)">
+            <div class="stat-item">
+              <div class="stat-value">5</div>
+              <div class="stat-label">FSM States</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">4</div>
+              <div class="stat-label">Debouncers</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">3</div>
+              <div class="stat-label">VHDL Modules</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">100%</div>
+              <div class="stat-label">Synthesizable</div>
+            </div>
           </div>
         </div>
       </div>
