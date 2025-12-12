@@ -673,41 +673,92 @@
 
       .animate-in {
         animation: fadeInUp 0.8s ease forwards;
+        opacity: 0;
       }
 
       .delay-1 {
         animation-delay: 0.1s;
-        opacity: 0;
       }
       .delay-2 {
         animation-delay: 0.2s;
-        opacity: 0;
       }
       .delay-3 {
         animation-delay: 0.3s;
-        opacity: 0;
       }
       .delay-4 {
         animation-delay: 0.4s;
-        opacity: 0;
       }
 
       /* Print styles */
       @media print {
-        .circuit-grid,
-        .nav {
-          display: none;
+        .animate-in {
+          animation: none;
+          opacity: 1;
+        }
+
+        .nav,
+        .mobile-warning {
+          display: none !important;
+        }
+
+        html {
+          scroll-snap-type: none;
+        }
+
+        body {
+          background: var(--bg-primary) !important;
+          color: var(--text-primary) !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+          color-adjust: exact !important;
+        }
+
+        .circuit-grid {
+          position: absolute !important;
+          opacity: 0.4 !important;
         }
 
         .slide {
           page-break-after: always;
-          min-height: auto;
+          page-break-inside: avoid;
+          min-height: 100vh;
           padding: 2rem;
+          background: var(--bg-primary) !important;
         }
 
-        body {
-          background: white;
-          color: black;
+        .card,
+        .stat-item,
+        .arch-diagram,
+        .code-block,
+        .image-placeholder {
+          background: var(--bg-secondary) !important;
+          border-color: rgba(199, 125, 78, 0.3) !important;
+        }
+
+        .data-table th {
+          background: var(--bg-tertiary) !important;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+          color: var(--text-primary) !important;
+        }
+
+        h3 {
+          color: var(--accent-copper) !important;
+        }
+
+        p,
+        li,
+        td {
+          color: var(--text-secondary) !important;
+        }
+
+        .animate-in {
+          opacity: 1 !important;
+          animation: none !important;
         }
       }
 
@@ -862,7 +913,7 @@
 
       @media (max-width: 1300px) or (max-height: 700px) {
         .mobile-warning {
-          display: flex;
+          /* display: flex; */
         }
       }
 
