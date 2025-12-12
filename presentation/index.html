@@ -859,6 +859,7 @@
       <a href="#slide-8" class="nav-dot" data-label="Waveforms"></a>
       <a href="#slide-9" class="nav-dot" data-label="Results"></a>
       <a href="#slide-10" class="nav-dot" data-label="Conclusion"></a>
+      <a href="#slide-11" class="nav-dot" data-label="Repository"></a>
     </nav>
 
     <!-- Slide 1: Title -->
@@ -1588,28 +1589,32 @@
     <section class="slide" id="slide-10">
       <span class="slide-number">09</span>
       <h3>Summary</h3>
-      <h2 style="margin-bottom: 1rem">Conclusions</h2>
+      <h2>Conclusions</h2>
 
-      <div class="two-column" style="gap: 2rem; align-items: start">
+      <div class="two-column">
         <div>
-          <p class="lead" style="font-size: 1.1rem; margin-bottom: 1rem">
-            This project demonstrates FSM methodology to implement a practical
-            digital lock system in VHDL.
+          <p class="lead">
+            This project successfully demonstrates the application of finite
+            state machine methodology to implement a practical digital lock
+            system in VHDL.
           </p>
 
-          <div class="card" style="padding: 1.25rem">
+          <div class="card" style="margin-top: 2rem">
             <h4>Key Achievements</h4>
-            <ul class="feature-list" style="margin-top: 0.5rem">
-              <li>5-state FSM using industry-standard 3-process pattern</li>
-              <li>Robust button debouncing with metastability protection</li>
-              <li>100% state and transition coverage in verification</li>
+            <ul class="feature-list" style="margin-top: 1rem">
+              <li>Implemented 5-state FSM using industry-standard 3-process pattern</li>
+              <li>Developed robust button debouncing with metastability protection</li>
+              <li>Achieved 100% state and transition coverage in verification</li>
               <li>Verified synthesizability for FPGA deployment</li>
+              <li>Created comprehensive documentation and test infrastructure</li>
             </ul>
           </div>
+        </div>
 
-          <div class="card" style="margin-top: 1rem; padding: 1.25rem">
+        <div>
+          <div class="card">
             <h4>Learning Outcomes</h4>
-            <ul class="feature-list" style="margin-top: 0.5rem">
+            <ul class="feature-list" style="margin-top: 1rem">
               <li>FSM design methodology and state encoding</li>
               <li>Synchronous digital design principles</li>
               <li>Hardware verification techniques</li>
@@ -1617,40 +1622,60 @@
             </ul>
           </div>
         </div>
+      </div>
+    </section>
 
+    <!-- Slide 11: Project Repository -->
+    <section class="slide" id="slide-11">
+      <span class="slide-number">10</span>
+      <h3>Resources</h3>
+      <h2>Project Repository</h2>
+
+      <div class="two-column">
         <div>
-          <div class="image-placeholder animate-in delay-1" style="padding: 1.5rem; min-height: auto">
+          <div class="image-placeholder animate-in delay-1">
             <span class="placeholder-title">Complete Test Suite Output</span>
+            <p class="placeholder-desc">Terminal showing all tests passing</p>
             <img
               src="./assets/Complete-Test-Suite-Output.png"
-              style="width: 100%; max-height: 35vh; object-fit: contain; margin-top: 0.5rem"
+              style="width: 100%; height: auto; margin-top: 1rem"
               class="fullscreenable"
             />
           </div>
+        </div>
 
+        <div>
           <div
             style="
-              margin-top: 1rem;
-              padding: 1.25rem;
+              padding: 2rem;
               background: var(--bg-secondary);
               border-left: 4px solid var(--accent-gold);
             "
           >
-            <h4 style="color: var(--accent-gold); margin-bottom: 0.5rem">
-              Project Repository
+            <h4 style="color: var(--accent-gold); margin-bottom: 1rem">
+              Project Structure
             </h4>
-            <code style="color: var(--accent-copper); font-size: 0.8rem"
+            <code style="color: var(--accent-copper); font-size: 0.9rem"
               >pattern-based-digital-lock/</code
             >
-            <ul
-              class="feature-list"
-              style="margin-top: 0.75rem"
-            >
+            <ul class="feature-list" style="margin-top: 1rem">
               <li>src/ — VHDL source files</li>
               <li>testbench/ — Verification testbenches</li>
-              <li>docs/ — Documentation</li>
+              <li>docs/ — Comprehensive documentation</li>
               <li>scripts/ — Automation tools</li>
+              <li>simulation/ — Waveform outputs</li>
             </ul>
+          </div>
+
+          <div class="stats-grid" style="margin-top: 2rem; grid-template-columns: repeat(2, 1fr)">
+            <div class="stat-item">
+              <div class="stat-value">403</div>
+              <div class="stat-label">Lines of Source</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">1198</div>
+              <div class="stat-label">Lines of Tests</div>
+            </div>
           </div>
         </div>
       </div>
@@ -1714,9 +1739,18 @@
 
       // Keyboard navigation
       document.addEventListener("keydown", (e) => {
-        const currentSlide = [...slides].findIndex((s) => {
+        // Find the slide most visible in viewport
+        let currentSlide = 0;
+        let maxVisible = 0;
+        slides.forEach((s, i) => {
           const rect = s.getBoundingClientRect();
-          return rect.top >= 0 && rect.top < window.innerHeight / 2;
+          const visibleTop = Math.max(0, rect.top);
+          const visibleBottom = Math.min(window.innerHeight, rect.bottom);
+          const visible = Math.max(0, visibleBottom - visibleTop);
+          if (visible > maxVisible) {
+            maxVisible = visible;
+            currentSlide = i;
+          }
         });
 
         if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") {
