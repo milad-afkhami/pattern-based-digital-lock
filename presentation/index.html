@@ -1139,36 +1139,19 @@
             </table>
           </div>
         </div>
-        <div class="animate-in delay-2">
-          <div class="image-placeholder">
-            <span class="placeholder-title">Bounce vs. Debounced Signal</span>
-            <p class="placeholder-desc">
-              Timing diagram comparing raw bouncy input with filtered stable
-              output
-            </p>
-            <div class="placeholder-guide">
-              <strong>Screenshot Guide</strong>
-              <ol>
-                <li>Run: <code>./scripts/test.sh tb_debouncer</code></li>
-                <li>
-                  Open waveform: <code>./scripts/wave.sh tb_debouncer</code>
-                </li>
-                <li>
-                  Add signals: <code>button_in</code>,
-                  <code>button_stable</code>, <code>button_out</code>,
-                  <code>counter</code>
-                </li>
-                <li>
-                  Zoom to show the TEST 2 (bouncy press) region where input
-                  bounces
-                </li>
-                <li>
-                  Screenshot showing: bouncy input → stable debounced → single
-                  pulse output
-                </li>
-              </ol>
-            </div>
-          </div>
+        <div
+          class="animate-in delay-2"
+          style="
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <img
+            src="./assets/Bounce-vs-Debounced-Signal.png"
+            style="max-width: 60vw; height: auto"
+          />
         </div>
       </div>
     </section>
@@ -1178,7 +1161,7 @@
       <span class="slide-number">05</span>
       <h3>VHDL Implementation</h3>
       <h2>Code Architecture</h2>
-      <p>
+      <p style="max-width: none">
         The FSM employs the industry-standard 3-process pattern: state register,
         next-state logic, and output logic, enhanced with a fourth process for
         the auto-relock timer.
@@ -1189,6 +1172,7 @@
           <div class="code-block" data-lang="VHDL">
             <code>
               <span class="code-comment">-- State type definition</span>
+              <br />
               <span class="code-keyword">type</span>
               <span class="code-type">state_type</span>
               <span class="code-keyword">is</span> ( STATE_LOCKED, STATE_FIRST,
@@ -1210,6 +1194,7 @@
               <span class="code-comment"
                 >-- Process 1: State Register (Sequential)</span
               >
+              <br />
               <span class="code-keyword">state_register:</span>
               <span class="code-keyword">process</span>(clk, reset)
               <span class="code-keyword">begin</span>
@@ -1232,13 +1217,15 @@
               <span class="code-comment"
                 >-- Process 2: Next State Logic (Combinational)</span
               >
+              <br />
               <span class="code-keyword">next_state_logic:</span>
               <span class="code-keyword">process</span>(current_state, button_A,
               button_B, button_C, button_D)
               <span class="code-keyword">begin</span>
               next_state <= current_state;
+              <br />
               <span class="code-comment">-- Default</span>
-
+              <br />
               <span class="code-keyword">case</span> current_state
               <span class="code-keyword">is</span>
               <span class="code-keyword">when</span> STATE_LOCKED =>
@@ -1247,7 +1234,7 @@
               <span class="code-keyword">then</span>
               next_state <= STATE_FIRST;
               <span class="code-keyword">end if</span>;
-
+              <br />
               <span class="code-keyword">when</span> STATE_FIRST =>
               <span class="code-keyword">if</span> button_B =
               <span class="code-string">'1'</span>
@@ -1262,8 +1249,11 @@
               <span class="code-keyword">then</span>
               next_state <= STATE_LOCKED;
               <span class="code-keyword">end if</span>;
+              <br />
               <span class="code-comment">-- ... additional states</span>
+              <br />
               <span class="code-keyword">end case</span>;
+              <br />
               <span class="code-keyword">end process</span>;
             </code>
           </div>
@@ -1357,9 +1347,9 @@
 
       <div class="two-column" style="margin-top: 2rem">
         <div class="image-placeholder animate-in delay-1">
-          <span class="placeholder-title"
-            >Correct Unlock Sequence Waveform</span
-          >
+          <span class="placeholder-title">
+            Correct Unlock Sequence Waveform
+          </span>
           <p class="placeholder-desc">
             Shows state transitions during successful A→B→C→A sequence
           </p>
