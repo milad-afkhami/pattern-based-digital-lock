@@ -432,13 +432,13 @@
         justify-content: center;
       }
 
-      .image-placeholder::before {
+      /* .image-placeholder::before {
         content: "⬚";
         font-size: 3rem;
         color: var(--accent-copper);
         opacity: 0.5;
         margin-bottom: 1rem;
-      }
+      } */
 
       .placeholder-title {
         font-size: 0.875rem;
@@ -1379,26 +1379,10 @@
         <p class="placeholder-desc">
           Shows FSM returning to LOCKED state on incorrect button press
         </p>
-        <div class="placeholder-guide">
-          <strong>Screenshot Guide</strong>
-          <ol>
-            <li>In GTKWave with tb_digital_lock waveform open</li>
-            <li>Navigate to TC3 region - the wrong sequence test (A→B→D)</li>
-            <li>
-              Show signals: <code>button_a</code>, <code>button_b</code>,
-              <code>button_d</code>, <code>current_state</code>,
-              <code>lock_status</code>
-            </li>
-            <li>
-              Screenshot should show: LOCKED→FIRST→SECOND (after A,B) then
-              immediately back to LOCKED when D is pressed
-            </li>
-            <li>
-              Ensure <code>lock_status</code> remains '0' throughout (never
-              unlocks)
-            </li>
-          </ol>
-        </div>
+        <img
+          src="./assets/Wrong-Sequence-Detection-Waveform.png"
+          style="width: 100%; height: auto"
+        />
       </div>
     </section>
 
