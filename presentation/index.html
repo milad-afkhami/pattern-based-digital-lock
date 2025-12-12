@@ -805,6 +805,67 @@
         color: var(--bg-primary);
       }
 
+      /* Mobile warning overlay */
+      .mobile-warning {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: var(--bg-primary);
+        z-index: 9999;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2rem;
+      }
+
+      .mobile-warning-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        color: var(--accent-copper);
+      }
+
+      .mobile-warning h2 {
+        font-family: var(--font-display);
+        font-size: 1.75rem;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+      }
+
+      .mobile-warning p {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        max-width: 320px;
+        line-height: 1.6;
+      }
+
+      .mobile-warning-btn {
+        margin-top: 2rem;
+        padding: 0.75rem 1.5rem;
+        background: transparent;
+        border: 1px solid var(--accent-copper);
+        color: var(--accent-copper);
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .mobile-warning-btn:hover {
+        background: var(--accent-copper);
+        color: var(--bg-primary);
+      }
+
+      .mobile-warning.hidden {
+        display: none !important;
+      }
+
+      @media (max-width: 1300px) or (max-height: 700px) {
+        .mobile-warning {
+          display: flex;
+        }
+      }
+
       /* Architecture diagram */
       .arch-diagram {
         display: flex;
@@ -845,6 +906,23 @@
   </head>
   <body>
     <div class="circuit-grid"></div>
+
+    <!-- Mobile/Small Screen Warning -->
+    <div class="mobile-warning" id="mobileWarning">
+      <div class="mobile-warning-icon">&#x1F4BB;</div>
+      <h2>Desktop Recommended</h2>
+      <p>
+        This presentation is optimized for larger screens. Please either view on
+        a desktop or laptop browser or zoom out (<kbd>Ctrl + -</kbd>) for the
+        best experience.
+      </p>
+      <button
+        class="mobile-warning-btn"
+        onclick="document.getElementById('mobileWarning').classList.add('hidden')"
+      >
+        Show Anyway
+      </button>
+    </div>
 
     <!-- Navigation -->
     <nav class="nav">
@@ -1588,7 +1666,7 @@
       <h2>Resource Utilization</h2>
 
       <div class="two-column">
-        <div class="card">
+        <div class="card animate-in delay-1">
           <h4>Estimated FPGA Resources</h4>
           <ul class="feature-list" style="margin-top: 1rem">
             <li>LUTs: ~50-100</li>
@@ -1598,7 +1676,7 @@
           </ul>
         </div>
 
-        <div class="card">
+        <div class="card animate-in delay-2">
           <h4>Design Characteristics</h4>
           <ul class="feature-list" style="margin-top: 1rem">
             <li>Fully synchronous design</li>
@@ -1610,7 +1688,7 @@
       </div>
 
       <div
-        class="stats-grid"
+        class="stats-grid animate-in delay-3"
         style="margin-top: 2rem; grid-template-columns: repeat(4, 1fr)"
       >
         <div class="stat-item">
@@ -1646,7 +1724,7 @@
 
       <div class="two-column">
         <div>
-          <div class="card" style="margin-top: 2rem">
+          <div class="card animate-in delay-1" style="margin-top: 2rem">
             <h4>Key Achievements</h4>
             <ul class="feature-list" style="margin-top: 1rem">
               <li>
@@ -1668,7 +1746,7 @@
         </div>
 
         <div>
-          <div class="card">
+          <div class="card animate-in delay-2">
             <h4>Learning Outcomes</h4>
             <ul class="feature-list" style="margin-top: 1rem">
               <li>FSM design methodology and state encoding</li>
@@ -1707,6 +1785,7 @@
               background: var(--bg-secondary);
               border-left: 4px solid var(--accent-gold);
             "
+            class="animate-in delay-2"
           >
             <h4 style="color: var(--accent-gold); margin-bottom: 1rem">
               Project Structure
@@ -1724,7 +1803,7 @@
           </div>
 
           <div
-            class="stats-grid"
+            class="stats-grid animate-in delay-3"
             style="margin-top: 2rem; grid-template-columns: repeat(2, 1fr)"
           >
             <div class="stat-item">
