@@ -167,38 +167,6 @@ button_in → [FF1] → [FF2] → button_sync(0)
 
 ![Processing Flow](../presentation/assets/Processing-Flow.png)
 
-```mermaid
-flowchart TD
-    A[button_in\nRaw Input] --> B[2-Stage\nSynchronizer]
-    B --> C{Input different\nfrom stable?}
-    C -->|Yes| D[Increment\nCounter]
-    C -->|No| E[Reset Counter\nto 0]
-    D --> F{Counter >=\nDEBOUNCE_TIME?}
-    F -->|Yes| G[Update\nbutton_stable]
-    F -->|No| H[Wait for\nnext clock]
-    G --> I{Rising edge?\nstable=1, prev=0}
-    E --> I
-    H --> I
-    I -->|Yes| J[button_out = '1'\nSingle pulse!]
-    I -->|No| K[button_out = '0']
-
-    style A fill:#f9f,stroke:#333
-    style J fill:#9f9,stroke:#333
-    style K fill:#fff,stroke:#333
-```
-
-<details>
-<summary>Text description of the flow</summary>
-
-1. Raw button input enters the synchronizer
-2. Synchronized input is compared to current stable value
-3. If different, counter increments; if same, counter resets
-4. When counter reaches DEBOUNCE_TIME, stable value updates
-5. Edge detector compares current stable to previous stable
-6. Output pulse generated only on rising edge (0→1 transition)
-
-</details>
-
 ### Step 1: Synchronization
 
 ```vhdl
