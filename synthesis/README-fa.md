@@ -25,6 +25,8 @@ ghdl --synth --std=08 -e top_level
 
 اگر این بدون خطا کامل شود، طراحی قابل سنتز است.
 
+![خروجی بررسی سنتز](../presentation/assets/Synthesis-Check-Output.png)
+
 <details>
 <summary>سنتز چیست؟</summary>
 

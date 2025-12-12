@@ -47,6 +47,8 @@
 
 ## نمودار بلوکی سیستم
 
+![نمودار بلوکی سیستم](../presentation/assets/System-Block-Diagram.png)
+
 ```mermaid
 flowchart LR
     subgraph ورودی‌ها

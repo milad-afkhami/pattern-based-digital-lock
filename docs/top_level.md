@@ -47,6 +47,8 @@ Think of it like the "main()" function in software - it's where everything comes
 
 ## System Block Diagram
 
+![System Block Diagram](../presentation/assets/System-Block-Diagram.png)
+
 ```mermaid
 flowchart LR
     subgraph Inputs

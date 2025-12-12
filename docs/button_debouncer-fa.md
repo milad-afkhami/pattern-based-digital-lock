@@ -64,6 +64,8 @@
 
 ### راه‌حل: خروجی حذف نوسان شده و تشخیص لبه
 
+![سیگنال نوسانی در مقابل حذف نوسان شده](../presentation/assets/Bounce-vs-Debounced-Signal.png)
+
 ```
 حذف نوسان  ________________________________/‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\______
 (پایدار)
@@ -162,6 +164,8 @@ button_in → [FF1] → [FF2] → button_sync(0)
 ## نحوه کار
 
 ### جریان پردازش
+
+![جریان پردازش](../presentation/assets/Processing-Flow.png)
 
 ```mermaid
 flowchart TD

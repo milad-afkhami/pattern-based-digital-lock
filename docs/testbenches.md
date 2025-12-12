@@ -80,6 +80,8 @@ Think of it like unit tests for hardware.
 
 ## Test Suite Summary
 
+![Complete Test Suite Output](../presentation/assets/Complete-Test-Suite-Output.png)
+
 | Testbench | Test Cases | Assertions | Status |
 |-----------|------------|------------|--------|
 | `tb_digital_lock` | 6 | 6 | ✓ All Pass |
@@ -107,6 +109,20 @@ Think of it like unit tests for hardware.
 | TC4 | Wrong First Button | B→(then correct) | lock_status = '1' after recovery |
 | TC5 | Auto-Relock | Wait after unlock | lock_status = '0' |
 | TC6 | Reset During Sequence | A→B→[reset] | lock_status = '0' |
+
+### Waveform Examples
+
+**TC2: Correct Unlock Sequence (A→B→C→A)**
+
+![Correct Unlock Sequence](../presentation/assets/Correct-Unlock-Sequence.png)
+
+**TC3: Wrong Sequence Detection (A→B→D)**
+
+![Wrong Sequence Detection Waveform](../presentation/assets/Wrong-Sequence-Detection-Waveform.png)
+
+**TC5: Auto-Relock Timer**
+
+![Auto-Relock Timer](../presentation/assets/Auto-Relock-Timer.png)
 
 ### Key Implementation Details
 

@@ -64,6 +64,8 @@ Without debouncing, the FSM would see multiple button presses:
 
 ### Solution: Debounced and Edge-Detected Output
 
+![Bounce vs Debounced Signal](../presentation/assets/Bounce-vs-Debounced-Signal.png)
+
 ```
 Debounced   ________________________________/‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\______
 (Stable)
@@ -162,6 +164,8 @@ button_in → [FF1] → [FF2] → button_sync(0)
 ## How It Works
 
 ### Processing Flow
+
+![Processing Flow](../presentation/assets/Processing-Flow.png)
 
 ```mermaid
 flowchart TD

@@ -25,6 +25,8 @@ ghdl --synth --std=08 -e top_level
 
 If this completes without errors, the design is synthesizable.
 
+![Synthesis Check Output](../presentation/assets/Synthesis-Check-Output.png)
+
 <details>
 <summary>What is synthesis?</summary>
 

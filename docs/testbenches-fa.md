@@ -80,6 +80,8 @@ flowchart TB
 
 ## خلاصه مجموعه تست
 
+![خروجی کامل مجموعه تست](../presentation/assets/Complete-Test-Suite-Output.png)
+
 | تست‌بنچ | موارد تست | تأییدیه‌ها | وضعیت |
 |---------|-----------|-----------|--------|
 | `tb_digital_lock` | ۶ | ۶ | ✓ همه موفق |
@@ -107,6 +109,20 @@ flowchart TB
 | TC4 | دکمه اول اشتباه | B→(سپس صحیح) | lock_status = '1' پس از بازیابی |
 | TC5 | قفل خودکار مجدد | انتظار پس از باز شدن | lock_status = '0' |
 | TC6 | بازنشانی حین توالی | A→B→[بازنشانی] | lock_status = '0' |
+
+### نمونه‌های شکل موج
+
+**TC2: توالی صحیح باز کردن (A→B→C→A)**
+
+![توالی صحیح باز کردن](../presentation/assets/Correct-Unlock-Sequence.png)
+
+**TC3: تشخیص توالی اشتباه (A→B→D)**
+
+![شکل موج تشخیص توالی اشتباه](../presentation/assets/Wrong-Sequence-Detection-Waveform.png)
+
+**TC5: تایمر قفل خودکار مجدد**
+
+![تایمر قفل خودکار مجدد](../presentation/assets/Auto-Relock-Timer.png)
 
 ### جزئیات کلیدی پیاده‌سازی
 

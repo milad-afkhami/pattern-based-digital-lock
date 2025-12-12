@@ -150,6 +150,8 @@ type state_type is (STATE_LOCKED, STATE_FIRST, STATE_SECOND,
 
 ### نمودار حالت
 
+![نمودار ماشین حالت](../presentation/assets/FSM-State-Diagram.png)
+
 ```mermaid
 stateDiagram-v2
     [*] --> STATE_LOCKED: بازنشانی / روشن شدن

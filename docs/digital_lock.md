@@ -150,6 +150,8 @@ This creates a custom type with exactly 5 possible values. It's like an enum in 
 
 ### State Diagram
 
+![FSM State Diagram](../presentation/assets/FSM-State-Diagram.png)
+
 ```mermaid
 stateDiagram-v2
     [*] --> STATE_LOCKED: Reset / Power-on
