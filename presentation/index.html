@@ -1051,119 +1051,77 @@
     </section>
 
     <!-- Slide 3: System Architecture -->
-    <section class="slide" id="slide-3">
+    <section class="slide" id="slide-3" style="justify-content: flex-start; padding-top: 3rem;">
       <span class="slide-number">02</span>
       <h3>System Design</h3>
-      <h2>Hardware Architecture</h2>
-      <p style="max-width: none">
+      <h2 style="margin-bottom: 1rem;">Hardware Architecture</h2>
+      <p style="max-width: none; margin-bottom: 1rem;">
         The system comprises three primary VHDL modules integrated in a
         hierarchical design pattern.
       </p>
 
-      <div class="three-column animate-in delay-1" style="margin-top: 1.5rem">
-        <div class="card">
-          <div class="card-icon">FSM</div>
-          <h4>digital_lock.vhd</h4>
-          <p>
-            Core finite state machine implementing the 5-state lock controller
-            with auto-relock timer functionality.
+      <div class="three-column animate-in delay-1" style="margin-top: 0.75rem; gap: 1.5rem;">
+        <div class="card" style="padding: 1.25rem;">
+          <div class="card-icon" style="width: 40px; height: 40px; font-size: 1rem; margin-bottom: 1rem;">FSM</div>
+          <h4 style="font-size: 1rem;">digital_lock.vhd</h4>
+          <p style="font-size: 0.8rem; margin-bottom: 0.5rem;">
+            Core FSM implementing 5-state lock controller with auto-relock timer.
           </p>
-          <p
-            style="
-              color: var(--accent-copper);
-              font-size: 0.75rem;
-              margin-top: 1rem;
-            "
-          >
+          <p style="color: var(--accent-copper); font-size: 0.7rem; margin: 0;">
             156 lines | 4 processes
           </p>
         </div>
-        <div class="card">
-          <div class="card-icon">DEB</div>
-          <h4>button_debouncer.vhd</h4>
-          <p>
-            Counter-based debounce circuit with 2-stage metastability
-            synchronizer and edge detection.
+        <div class="card" style="padding: 1.25rem;">
+          <div class="card-icon" style="width: 40px; height: 40px; font-size: 1rem; margin-bottom: 1rem;">DEB</div>
+          <h4 style="font-size: 1rem;">button_debouncer.vhd</h4>
+          <p style="font-size: 0.8rem; margin-bottom: 0.5rem;">
+            Counter-based debounce with 2-stage synchronizer and edge detection.
           </p>
-          <p
-            style="
-              color: var(--accent-copper);
-              font-size: 0.75rem;
-              margin-top: 1rem;
-            "
-          >
+          <p style="color: var(--accent-copper); font-size: 0.7rem; margin: 0;">
             93 lines | 1 process
           </p>
         </div>
-        <div class="card">
-          <div class="card-icon">TOP</div>
-          <h4>top_level.vhd</h4>
-          <p>
-            System integration module instantiating 4 debouncers and 1 FSM
-            controller with configurable generics.
+        <div class="card" style="padding: 1.25rem;">
+          <div class="card-icon" style="width: 40px; height: 40px; font-size: 1rem; margin-bottom: 1rem;">TOP</div>
+          <h4 style="font-size: 1rem;">top_level.vhd</h4>
+          <p style="font-size: 0.8rem; margin-bottom: 0.5rem;">
+            Integration module: 4 debouncers + 1 FSM with configurable generics.
           </p>
-          <p
-            style="
-              color: var(--accent-copper);
-              font-size: 0.75rem;
-              margin-top: 1rem;
-            "
-          >
+          <p style="color: var(--accent-copper); font-size: 0.7rem; margin: 0;">
             154 lines | Synthesizable
           </p>
         </div>
       </div>
 
-      <div class="arch-diagram animate-in delay-2" style="margin-top: 1.5rem">
+      <div class="arch-diagram animate-in delay-2" style="margin-top: 1rem; padding: 0.75rem; gap: 0.25rem;">
         <div class="arch-row">
-          <div class="arch-box">Button A</div>
-          <div class="arch-box">Button B</div>
-          <div class="arch-box">Button C</div>
-          <div class="arch-box">Button D</div>
+          <div class="arch-box" style="padding: 0.4rem 0.75rem; font-size: 0.65rem;">Button A</div>
+          <div class="arch-box" style="padding: 0.4rem 0.75rem; font-size: 0.65rem;">Button B</div>
+          <div class="arch-box" style="padding: 0.4rem 0.75rem; font-size: 0.65rem;">Button C</div>
+          <div class="arch-box" style="padding: 0.4rem 0.75rem; font-size: 0.65rem;">Button D</div>
         </div>
-        <div
-          style="
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.875rem;
-          "
-        >
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;">
           ↓ Raw Inputs
         </div>
         <div class="arch-row">
-          <div class="arch-box">Debouncer</div>
-          <div class="arch-box">Debouncer</div>
-          <div class="arch-box">Debouncer</div>
-          <div class="arch-box">Debouncer</div>
+          <div class="arch-box" style="padding: 0.4rem 0.75rem; font-size: 0.65rem;">Debouncer</div>
+          <div class="arch-box" style="padding: 0.4rem 0.75rem; font-size: 0.65rem;">Debouncer</div>
+          <div class="arch-box" style="padding: 0.4rem 0.75rem; font-size: 0.65rem;">Debouncer</div>
+          <div class="arch-box" style="padding: 0.4rem 0.75rem; font-size: 0.65rem;">Debouncer</div>
         </div>
-        <div
-          style="
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.875rem;
-          "
-        >
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;">
           ↓ Clean Pulses
         </div>
         <div class="arch-row">
-          <div class="arch-box main" style="flex: 4">
+          <div class="arch-box main" style="flex: 4; padding: 0.4rem 0.75rem; font-size: 0.65rem;">
             Digital Lock FSM Controller
           </div>
         </div>
-        <div
-          style="
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.875rem;
-          "
-        >
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;">
           ↓
         </div>
         <div class="arch-row">
-          <div
-            class="arch-box"
-            style="flex: 2; border-color: var(--accent-green)"
-          >
+          <div class="arch-box" style="flex: 2; border-color: var(--accent-green); padding: 0.4rem 0.75rem; font-size: 0.65rem;">
             Lock Status Output
           </div>
         </div>
