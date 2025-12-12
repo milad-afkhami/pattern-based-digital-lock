@@ -755,7 +755,6 @@
         color: var(--text-muted);
         font-size: 1.25rem;
       }
-
     </style>
   </head>
   <body>
@@ -993,7 +992,15 @@
             </tbody>
           </table>
         </div>
-        <div class="animate-in delay-2">
+        <div
+          class="animate-in delay-2"
+          style="
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
           <img
             src="./assets/FSM-State-Diagram.png"
             style="max-height: 80vh; width: auto"
@@ -1046,7 +1053,10 @@
 
           <div class="code-block" data-lang="VHDL" style="margin-top: 1.5rem">
             <code>
-              <span class="code-comment">-- Edge detection: rising edge only</span>
+              <span class="code-comment"
+                >-- Edge detection: rising edge only</span
+              >
+              <br />
               <span class="code-keyword">if</span> button_stable =
               <span class="code-string">'1'</span>
               <span class="code-keyword">and</span> button_prev =
@@ -1059,30 +1069,29 @@
             </code>
           </div>
         </div>
-        <div class="animate-in delay-2">
-          <div class="image-placeholder">
-            <span class="placeholder-title">Debouncer Flow Diagram</span>
-            <p class="placeholder-desc">
-              Processing flow from raw input through synchronizer, counter, and edge detector to clean pulse output
-            </p>
-            <div class="placeholder-guide">
-              <strong>Screenshot Guide</strong>
-              <ol>
-                <li>Open <code>docs/button_debouncer.md</code></li>
-                <li>Navigate to "Processing Flow" section</li>
-                <li>
-                  The Mermaid flowchart shows: Raw Input → Synchronizer →
-                  Counter → Edge Detector → Output
-                </li>
-                <li>Render in GitHub, VSCode, or Mermaid Live Editor</li>
-                <li>Screenshot the flowchart diagram</li>
-                <li>
-                  Replace placeholder with:
-                  <code>&lt;img src="assets/debouncer-flow.png"&gt;</code>
-                </li>
-              </ol>
-            </div>
-          </div>
+        <div
+          class="animate-in delay-2"
+          style="
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <img
+            src="./assets/Processing-Flow.png"
+            style="max-height: 80vh; width: auto"
+          />
+          <a
+            href="https://www.mermaidchart.com/play?utm_source=mermaid_live_editor&utm_medium=toggle#pako:eNp1kstuwjAQRX9l6i7YNFJggdRIQHkkvFQq8VBVkQqFZAIRxkaOU0oR_17HiYK7aHYz957xtSdXEvIIiUMsy_JZyFmc7ByfAcg9HtEBhtyKAnHIW5Tzg-7oIrjwTDqAVGkajik_h_tASFj2cgdAd-2TbSYlZ5uEFa38mwdnGLNTJn3yCZbVhp7yNayFDHZ4dy0uLNwLzpIfFMpYCD3t7199ogdAlMQxCmTyzsWCHyGVwZZixye3QugrDj4w1fhgneOhUBc0wT7PmDTO0syMa8RVyBxTlJWrwiQHu2IG2u2pfKUP2i0YuL231azvbpbjV_eeyTMzDdUBq1MUSITyxYorVJM9I81Imd-DRELMhdrHt4SQ8vBQeYfaNVYp5kmasB1gtMNO-Sit-hOcBH617CqJW_iLYmQWYzPj5OWq1r5F6kC1V_UPQAtq9ZpvbE4dSRFOGU3xwSdwM2aVN5j-P8quFUgBpfKiRnUhTih1Hrtd2_Y8U5mUSuO52firTEvF85oD2ya3X4kL2S0"
+            style="
+              display: block;
+              margin-top: 0.5rem;
+              font-size: 0.75rem;
+              color: var(--text-muted);
+            "
+            >View Full Diagram</a
+          >
         </div>
       </div>
     </section>
@@ -1095,8 +1104,9 @@
           <h3>Input Processing</h3>
           <h2>Debounce in Action</h2>
           <p>
-            The waveform demonstrates how the debouncer transforms a noisy, bouncing
-            button signal into a clean single-cycle pulse that the FSM can reliably process.
+            The waveform demonstrates how the debouncer transforms a noisy,
+            bouncing button signal into a clean single-cycle pulse that the FSM
+            can reliably process.
           </p>
 
           <div class="card" style="margin-top: 1.5rem">
@@ -1133,7 +1143,8 @@
           <div class="image-placeholder">
             <span class="placeholder-title">Bounce vs. Debounced Signal</span>
             <p class="placeholder-desc">
-              Timing diagram comparing raw bouncy input with filtered stable output
+              Timing diagram comparing raw bouncy input with filtered stable
+              output
             </p>
             <div class="placeholder-guide">
               <strong>Screenshot Guide</strong>
