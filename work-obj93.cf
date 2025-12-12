@@ -1,0 +1,4 @@
+v 4
+file . "testbench/tb_debouncer.vhd" "0a689f3f3f2bfdc95eeebb65339a15492c03a566" "20251212105849.311":
+  entity tb_debouncer at 7( 307) + 0 on 11;
+  architecture behavioral of tb_debouncer at 13( 393) + 0 on 12;
