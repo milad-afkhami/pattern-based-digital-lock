@@ -1,3 +1,5 @@
+> **[🇮🇷 نسخه فارسی](README-fa.md)**
+
 # Testbench Files (`testbench/`)
 
 This directory contains VHDL testbenches for verifying the digital lock system.

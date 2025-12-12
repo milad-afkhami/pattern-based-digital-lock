@@ -1,3 +1,5 @@
+> **[🇮🇷 نسخه فارسی](README-fa.md)**
+
 # Simulation Files (`simulation/`)
 
 This directory stores waveform files generated during simulation.

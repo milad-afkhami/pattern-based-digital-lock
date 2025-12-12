@@ -1,3 +1,5 @@
+> **[🇮🇷 نسخه فارسی](README-fa.md)**
+
 # Synthesis Files (`synthesis/`)
 
 This directory is for synthesis outputs when targeting an FPGA.

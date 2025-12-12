@@ -1,3 +1,5 @@
+> **[🇮🇷 نسخه فارسی](README-fa.md)**
+
 # Scripts (`scripts/`)
 
 Shell scripts for building, testing, and managing the digital lock project.

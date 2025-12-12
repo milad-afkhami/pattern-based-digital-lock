@@ -1,3 +1,5 @@
+> **[🇮🇷 نسخه فارسی](README-fa.md)**
+
 # Source Files (`src/`)
 
 This directory contains the synthesizable VHDL source files for the pattern-based digital lock.

@@ -1,3 +1,5 @@
+> **[🇮🇷 نسخه فارسی](button_debouncer-fa.md)**
+
 # Button Debouncer Module
 
 **File**: `src/button_debouncer.vhd`

@@ -1,3 +1,5 @@
+> **[🇮🇷 نسخه فارسی](README-fa.md)**
+
 # Pattern-Based Digital Lock
 
 A hardware implementation of a pattern-based digital lock using a Finite State Machine (FSM) in VHDL. The lock requires a specific 4-button sequence (A → B → C → A) to unlock and features automatic re-locking, button debouncing, and comprehensive error handling.

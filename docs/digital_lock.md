@@ -1,3 +1,5 @@
+> **[🇮🇷 نسخه فارسی](digital_lock-fa.md)**
+
 # Digital Lock FSM Controller
 
 **File**: `src/digital_lock.vhd`

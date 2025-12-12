@@ -1,3 +1,5 @@
+> **[🇮🇷 نسخه فارسی](top_level-fa.md)**
+
 # Top-Level System Integration
 
 **File**: `src/top_level.vhd`
