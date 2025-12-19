@@ -1,83 +1,83 @@
 > **[🇬🇧 English Version](button_debouncer.md)**
 
-# ماژول حذف‌کننده نوسان دکمه
+# Button Debouncer Module
 
 **فایل**: `src/button_debouncer.vhd`
 **تعداد خطوط**: ۹۳
-**هدف**: فیلتر کردن نوسان مکانیکی دکمه و ارائه پالس‌های خروجی تمیز و تک‌سیکلی
+**هدف**: Filter کردن bounce مکانیکی دکمه و ارائه single-cycle output pulse‌های تمیز
 
 ---
 
 ## فهرست مطالب
 
 - [مقدمه](#مقدمه)
-- [مشکل: نوسان دکمه](#مشکل-نوسان-دکمه)
-- [واسط موجودیت](#واسط-موجودیت)
-- [معماری](#معماری)
+- [مشکل: Button Bounce](#مشکل-button-bounce)
+- [Entity Interface](#entity-interface)
+- [Architecture](#architecture)
 - [نحوه کار](#نحوه-کار)
 - [مثال استفاده](#مثال-استفاده)
-- [نمودار زمانی](#نمودار-زمانی)
-- [پیکربندی](#پیکربندی)
+- [Timing Diagram](#timing-diagram)
+- [Configuration](#configuration)
 - [تصمیمات طراحی](#تصمیمات-طراحی)
 
 ---
 
 ## مقدمه
 
-ماژول `button_debouncer` دو مشکل بحرانی را با دکمه‌های مکانیکی حل می‌کند:
+Module `button_debouncer` دو مشکل critical را با mechanical button‌ها حل می‌کند:
 
-1. **فیلتر نوسان**: نادیده گرفتن گذارهای سریع روشن/خاموش ناشی از نوسان تماس مکانیکی
-2. **تشخیص لبه**: تولید دقیقاً یک پالس خروجی به ازای هر فشردن دکمه، صرف نظر از مدت نگه‌داری دکمه
+1. **Bounce Filtering**: Ignore کردن rapid on/off transition‌های ناشی از mechanical contact bounce
+2. **Edge Detection**: تولید دقیقاً یک output pulse به ازای هر button press، صرف نظر از مدت نگه‌داری دکمه
 
 <details>
-<summary>چرا به حذف نوسان نیاز داریم؟</summary>
+<summary>چرا به Debouncing نیاز داریم؟</summary>
 
-وقتی یک دکمه فیزیکی را فشار می‌دهید، تماس‌های فلزی اتصال تمیزی برقرار نمی‌کنند. آن‌ها «نوسان» می‌کنند - به سرعت برای چند میلی‌ثانیه وصل و قطع می‌شوند قبل از اینکه تثبیت شوند. بدون حذف نوسان، یک فشردن دکمه ممکن است به صورت ۱۰ تا ۵۰ فشردن سریع ثبت شود!
+وقتی یک physical button را فشار می‌دهید، metal contact‌ها connection تمیزی برقرار نمی‌کنند. آن‌ها «bounce» می‌کنند - به سرعت برای چند میلی‌ثانیه connect و disconnect می‌شوند قبل از اینکه settle شوند. بدون debouncing، یک button press ممکن است به صورت ۱۰ تا ۵۰ rapid press register شود!
 
 </details>
 
 ---
 
-## مشکل: نوسان دکمه
+## مشکل: Button Bounce
 
-### سیگنال خام دکمه (نوسانی)
+### Raw Button Signal (Bouncy)
 
 ```
 رویداد فشردن دکمه:
 
-فعل          ____________________/‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\____
-فیزیکی           ↑                                                ↑
-              فشردن                                            رها کردن
+Physical      ____________________/‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\____
+Action           ↑                                                ↑
+              Press                                            Release
 
-سیگنال       ____/‾\_/‾‾\_/‾‾‾‾\__/‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\_/‾‾\_/‾\_____
-خام               ↑                                    ↑
-               نوسان                                نوسان
-             (۵-۲۰ میلی‌ثانیه)                    (۵-۲۰ میلی‌ثانیه)
+Raw          ____/‾\_/‾‾\_/‾‾‾‾\__/‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\_/‾‾\_/‾\_____
+Signal            ↑                                    ↑
+               Bounce                                Bounce
+             (۵-۲۰ms)                              (۵-۲۰ms)
 ```
 
-### آنچه ماشین حالت بدون حذف نوسان می‌بیند
+### آنچه FSM بدون Debouncing می‌بیند
 
-بدون حذف نوسان، ماشین حالت چندین فشردن دکمه می‌بیند:
-- کاربر یک بار A را فشار می‌دهد ← ماشین حالت ۵-۱۰ بار A فشرده شده می‌بیند
-- کاربر A، B، C، A را فشار می‌دهد ← ماشین حالت A، A، A، B، B، C، C، A، A، A می‌بیند
-- نتیجه: رفتار غیرقابل پیش‌بینی، وارد کردن توالی باز کردن غیرممکن است
+بدون debouncing، FSM چندین button press می‌بیند:
+- کاربر یک بار A را فشار می‌دهد ← FSM ۵-۱۰ بار A pressed می‌بیند
+- کاربر A، B، C، A را فشار می‌دهد ← FSM A، A، A، B، B، C، C، A، A، A می‌بیند
+- نتیجه: Unpredictable behavior، وارد کردن unlock sequence غیرممکن است
 
-### راه‌حل: خروجی حذف نوسان شده و تشخیص لبه
+### راه‌حل: Debounced و Edge-detected Output
 
-![سیگنال نوسانی در مقابل حذف نوسان شده](../presentation/assets/Bounce-vs-Debounced-Signal.png)
+![Bouncy Signal در مقابل Debounced Signal](../presentation/assets/Bounce-vs-Debounced-Signal.png)
 
 ```
-حذف نوسان  ________________________________/‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\______
-(پایدار)
+Debounced    ________________________________/‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\______
+(Stable)
 
-خروجی      ________________________________/‾\__________________________
-(پالس)                                      ↑
-                                   پالس تک‌سیکلی
+Output       ________________________________/‾\__________________________
+(Pulse)                                       ↑
+                                   Single-cycle pulse
 ```
 
 ---
 
-## واسط موجودیت
+## Entity Interface
 
 ```vhdl
 entity button_debouncer is
@@ -93,41 +93,41 @@ entity button_debouncer is
 end button_debouncer;
 ```
 
-### پارامترهای عمومی
+### Generic Parameter‌ها
 
-| پارامتر | نوع | مقدار پیش‌فرض | توضیحات |
+| Parameter | نوع | مقدار پیش‌فرض | توضیحات |
 |---------|-----|---------------|---------|
-| `DEBOUNCE_TIME` | integer | ۱۰ | سیکل‌های کلاک برای پایداری |
+| `DEBOUNCE_TIME` | integer | ۱۰ | Clock cycle‌ها برای stability |
 
 <details>
 <summary>نحوه محاسبه DEBOUNCE_TIME</summary>
 
-فرمول: `DEBOUNCE_TIME = دوره_حذف_نوسان × فرکانس_کلاک`
+فرمول: `DEBOUNCE_TIME = debounce_period × clock_frequency`
 
 مثال‌ها:
-- حذف نوسان ۱۰ میلی‌ثانیه در ۱۰۰ مگاهرتز: ۰.۰۱۰ × ۱۰۰٬۰۰۰٬۰۰۰ = ۱٬۰۰۰٬۰۰۰
-- حذف نوسان ۲۰ میلی‌ثانیه در ۵۰ مگاهرتز: ۰.۰۲۰ × ۵۰٬۰۰۰٬۰۰۰ = ۱٬۰۰۰٬۰۰۰
+- Debounce ۱۰ میلی‌ثانیه در ۱۰۰ مگاهرتز: ۰.۰۱۰ × ۱۰۰٬۰۰۰٬۰۰۰ = ۱٬۰۰۰٬۰۰۰
+- Debounce ۲۰ میلی‌ثانیه در ۵۰ مگاهرتز: ۰.۰۲۰ × ۵۰٬۰۰۰٬۰۰۰ = ۱٬۰۰۰٬۰۰۰
 
-برای شبیه‌سازی، از مقادیر کوچک (۱۰-۱۰۰) برای سریع نگه داشتن شبیه‌سازی استفاده کنید.
+برای simulation، از مقادیر کوچک (۱۰-۱۰۰) برای سریع نگه داشتن simulation استفاده کنید.
 
-مقادیر معمول دنیای واقعی: ۱۰-۲۰ میلی‌ثانیه (۱-۲ میلیون سیکل در ۱۰۰ مگاهرتز)
+مقادیر معمول real-world: ۱۰-۲۰ میلی‌ثانیه (۱-۲ میلیون cycle در ۱۰۰ مگاهرتز)
 
 </details>
 
-### پورت‌ها
+### Port‌ها
 
-| پورت | جهت | نوع | توضیحات |
+| Port | جهت | نوع | توضیحات |
 |------|-----|-----|---------|
-| `clk` | ورودی | std_logic | کلاک سیستم |
-| `reset` | ورودی | std_logic | بازنشانی ناهمگام، فعال-بالا |
-| `button_in` | ورودی | std_logic | ورودی خام دکمه (ممکن است نوسان داشته باشد) |
-| `button_out` | خروجی | std_logic | خروجی پالس تمیز و تک‌سیکلی |
+| `clk` | in | std_logic | System clock |
+| `reset` | in | std_logic | Asynchronous reset، active-high |
+| `button_in` | in | std_logic | Raw button input (ممکن است bounce داشته باشد) |
+| `button_out` | out | std_logic | Clean single-cycle output pulse |
 
 ---
 
-## معماری
+## Architecture
 
-### سیگنال‌های داخلی
+### Internal Signal‌ها
 
 ```vhdl
 signal counter       : integer range 0 to DEBOUNCE_TIME := 0;
@@ -136,25 +136,25 @@ signal button_stable : std_logic := '0';
 signal button_prev   : std_logic := '0';
 ```
 
-| سیگنال | نوع | توضیحات |
+| Signal | نوع | توضیحات |
 |--------|-----|---------|
-| `counter` | integer | شمارنده پایداری (در حالی که ورودی پایدار است شمارش می‌کند) |
-| `button_sync` | std_logic_vector(1:0) | همگام‌ساز ۲ مرحله‌ای برای شبه‌پایداری |
-| `button_stable` | std_logic | وضعیت حذف نوسان شده دکمه |
-| `button_prev` | std_logic | وضعیت پایدار قبلی (برای تشخیص لبه) |
+| `counter` | integer | Stability counter (در حالی که input stable است count می‌کند) |
+| `button_sync` | std_logic_vector(1:0) | Two-stage synchronizer برای metastability |
+| `button_stable` | std_logic | Debounced button state |
+| `button_prev` | std_logic | Previous stable state (برای edge detection) |
 
 <details>
-<summary>شبه‌پایداری چیست؟</summary>
+<summary>Metastability چیست؟</summary>
 
-**شبه‌پایداری** زمانی رخ می‌دهد که یک سیگنال دقیقاً همزمان با رسیدن لبه کلاک تغییر کند. فلیپ‌فلاپ نمی‌تواند بین ۰ و ۱ تصمیم بگیرد و خروجی ناپایدار تولید می‌کند.
+**Metastability** زمانی رخ می‌دهد که یک signal دقیقاً همزمان با رسیدن clock edge تغییر کند. Flip-flop نمی‌تواند بین ۰ و ۱ تصمیم بگیرد و unstable output تولید می‌کند.
 
-یک **همگام‌ساز** (دو فلیپ‌فلاپ به صورت سری) به سیگنال دو سیکل کلاک می‌دهد تا قبل از استفاده پایدار شود و عملاً مشکلات شبه‌پایداری را حذف می‌کند.
+یک **synchronizer** (دو flip-flop به صورت series) به signal دو clock cycle می‌دهد تا قبل از استفاده settle شود و عملاً metastability issue‌ها را eliminate می‌کند.
 
 ```
 button_in → [FF1] → [FF2] → button_sync(0)
              ↑        ↑
-          ممکن است   پایدار
-         ناپایدار باشد
+          May be    Stable
+         unstable
 ```
 
 </details>
@@ -163,65 +163,65 @@ button_in → [FF1] → [FF2] → button_sync(0)
 
 ## نحوه کار
 
-### جریان پردازش
+### Processing Flow
 
-![جریان پردازش](../presentation/assets/Processing-Flow.png)
+![Processing Flow](../presentation/assets/Processing-Flow.png)
 
-### مرحله ۱: همگام‌سازی
+### Stage ۱: Synchronization
 
 ```vhdl
--- همگام‌ساز دو مرحله‌ای برای حفاظت از شبه‌پایداری
+-- Two-stage synchronizer برای metastability protection
 button_sync <= button_sync(0) & button_in;
 ```
 
-ورودی خام دکمه از دو فلیپ‌فلاپ عبور می‌کند تا از تأثیر شبه‌پایداری بر منطق پایین‌دست جلوگیری شود.
+Raw button input از دو flip-flop عبور می‌کند تا از affect شدن downstream logic توسط metastability جلوگیری شود.
 
-### مرحله ۲: شمارش حذف نوسان
+### Stage ۲: Debounce Counting
 
 ```vhdl
--- شمارش زمان پایداری
+-- Count stability time
 if button_sync(1) /= button_stable then
-    -- ورودی تغییر کرده، شروع شمارش
+    -- Input تغییر کرده، شروع counting
     if counter >= DEBOUNCE_TIME then
-        button_stable <= button_sync(1);  -- پذیرش مقدار جدید
+        button_stable <= button_sync(1);  -- Accept مقدار جدید
         counter <= 0;
     else
-        counter <= counter + 1;  -- ادامه شمارش
+        counter <= counter + 1;  -- ادامه counting
     end if;
 else
-    counter <= 0;  -- ورودی با پایدار مطابقت دارد، بازنشانی شمارنده
+    counter <= 0;  -- Input با stable match دارد، reset counter
 end if;
 ```
 
-شمارنده فقط زمانی افزایش می‌یابد که ورودی با خروجی پایدار متفاوت باشد. اگر ورودی برای `DEBOUNCE_TIME` سیکل متفاوت بماند، به عنوان مقدار پایدار جدید پذیرفته می‌شود.
+Counter فقط زمانی increment می‌شود که input با stable output متفاوت باشد. اگر input برای `DEBOUNCE_TIME` cycle متفاوت بماند، به عنوان مقدار stable جدید accept می‌شود.
 
-### مرحله ۳: تشخیص لبه
+### Stage ۳: Edge Detection
 
 ```vhdl
--- به خاطر سپردن وضعیت پایدار قبلی
+-- به خاطر سپردن previous stable state
 button_prev <= button_stable;
 
--- تولید پالس روی لبه بالارونده
+-- تولید pulse روی rising edge
 if button_stable = '1' and button_prev = '0' then
-    button_out <= '1';  -- لبه بالارونده تشخیص داده شد!
+    button_out <= '1';  -- Rising edge detected!
 else
     button_out <= '0';
 end if;
 ```
 
-با مقایسه وضعیت پایدار فعلی با وضعیت پایدار قبلی، لحظه دقیق گذار دکمه از فشرده نشده به فشرده شده را تشخیص می‌دهیم.
+با compare کردن current stable state با previous stable state، لحظه دقیق transition دکمه از unpressed به pressed را detect می‌کنیم.
 
 <details>
-<summary>چرا تشخیص لبه بالارونده؟</summary>
+<summary>چرا Rising Edge Detection؟</summary>
 
-بدون تشخیص لبه، نگه داشتن یک دکمه به طور مداوم '1' خروجی می‌دهد. ماشین حالت همان دکمه را در هر سیکل کلاک فشرده شده می‌بیند و خیلی سریع بین حالات پیش می‌رود.
+بدون edge detection، نگه داشتن یک دکمه به طور مداوم '1' output می‌دهد. FSM همان دکمه را در هر clock cycle pressed می‌بیند و خیلی سریع بین state‌ها progress می‌کند.
 
-با تشخیص لبه:
-- فشردن و نگه داشتن دکمه A ← یک پالس تولید می‌شود
-- رها کردن دکمه A ← پالسی تولید نمی‌شود
-- فشردن مجدد دکمه A ← یک پالس تولید می‌شود
+با edge detection:
+- فشردن و نگه داشتن دکمه A ← یک pulse تولید می‌شود
+- Release کردن دکمه A ← pulse‌ای تولید نمی‌شود
+- فشردن مجدد دکمه A ← یک pulse تولید می‌شود
 
-این تضمین می‌کند که هر فشردن فیزیکی = دقیقاً یک گذار ماشین حالت.
+این تضمین می‌کند که هر physical press = دقیقاً یک FSM transition.
 
 </details>
 
@@ -229,25 +229,25 @@ end if;
 
 ## مثال استفاده
 
-### نمونه‌سازی پایه
+### Basic Instantiation
 
 ```vhdl
 debounce_btn_a: entity work.button_debouncer
     generic map (
-        DEBOUNCE_TIME => 1000000  -- ~۱۰ میلی‌ثانیه در ۱۰۰ مگاهرتز
+        DEBOUNCE_TIME => 1000000  -- ~۱۰ms در ۱۰۰ مگاهرتز
     )
     port map (
         clk        => system_clock,
         reset      => system_reset,
-        button_in  => raw_button_a,  -- از دکمه فیزیکی
-        button_out => clean_button_a  -- به ماشین حالت
+        button_in  => raw_button_a,  -- از physical button
+        button_out => clean_button_a  -- به FSM
     );
 ```
 
-### چندین دکمه
+### Multiple Button‌ها
 
 ```vhdl
--- ایجاد ۴ دکمه حذف نوسان شده
+-- ایجاد ۴ debounced button
 gen_debouncers: for i in 0 to 3 generate
     debouncer: entity work.button_debouncer
         generic map (DEBOUNCE_TIME => DEBOUNCE_CYCLES)
@@ -262,40 +262,40 @@ end generate;
 
 ---
 
-## نمودار زمانی
+## Timing Diagram
 
-### فشردن عادی دکمه
+### Normal Button Press
 
 ```
 clk          ─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─
               └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘
 
 button_in    ──────────────┐                       ┌───────────────
-(خام)                      └───────────────────────┘
+(raw)                      └───────────────────────┘
 
 counter           0   1   2   3   4   5   0   0   1   2   3   4   5
 
 button_stable ────────────────────────────┐       ┌────────────────
-(حذف نوسان شده)                           └───────┘
+(debounced)                               └───────┘
 
 button_out   ─────────────────────────────┐ ┌─────────────────────
-(پالس)                                    └─┘
+(pulse)                                   └─┘
                                           ↑
-                                   پالس تک‌سیکلی
-                                   روی لبه بالارونده
+                                   Single-cycle pulse
+                                   روی rising edge
 ```
 
-### فشردن نوسانی دکمه (فیلتر شده)
+### Bouncy Button Press (Filtered)
 
 ```
 button_in    ──────┐ ┌─┐ ┌─┐ ┌──────────────────────────────────
-(نوسانی)           └─┘ └─┘ └─┘
+(bouncy)           └─┘ └─┘ └─┘
                    ↑       ↑
-                نوسان‌ها  تثبیت
+                Bounce‌ها  Settle
 
 counter           0 1 0 1 0 1 2 3 4 5
                   ↑   ↑
-               با هر نوسان بازنشانی می‌شود
+               با هر bounce reset می‌شود
 
 button_stable ────────────────────────────┐
                                           └─ (پس از DEBOUNCE_TIME تغییر می‌کند)
@@ -304,38 +304,38 @@ button_out   ──────────────────────�
                                           └─┘
 ```
 
-### فشردن کوتاه (فیلتر شده)
+### Short Press (Filtered)
 
 ```
 button_in    ──────────┐   ┌───────────────────────────────────
 (خیلی کوتاه)           └───┘
-                       ← ۳ →  (کمتر از DEBOUNCE_TIME=5)
+                       ← 3 →  (کمتر از DEBOUNCE_TIME=5)
 
 counter           0   1   2   3   0   0   0
                                   ↑
-                           قبل از رسیدن به ۵ بازنشانی می‌شود
+                           قبل از رسیدن به ۵ reset می‌شود
 
 button_stable ─────────────────────────────────────────────────
                               (هرگز تغییر نمی‌کند)
 
 button_out   ──────────────────────────────────────────────────
-                              (پالسی تولید نمی‌شود)
+                              (pulse‌ای تولید نمی‌شود)
 ```
 
 ---
 
-## پیکربندی
+## Configuration
 
-### تنظیمات شبیه‌سازی
+### Simulation Setting‌ها
 
 ```vhdl
--- شبیه‌سازی سریع (واقع‌گرایانه نیست اما سریع)
+-- Simulation سریع (realistic نیست اما fast)
 DEBOUNCE_TIME => 5
 ```
 
-### تنظیمات سخت‌افزار واقعی
+### Real Hardware Setting‌ها
 
-| فرکانس کلاک | دوره حذف نوسان | DEBOUNCE_TIME |
+| Clock Frequency | Debounce Period | DEBOUNCE_TIME |
 |-------------|----------------|---------------|
 | ۵۰ مگاهرتز | ۱۰ میلی‌ثانیه | ۵۰۰٬۰۰۰ |
 | ۵۰ مگاهرتز | ۲۰ میلی‌ثانیه | ۱٬۰۰۰٬۰۰۰ |
@@ -343,15 +343,15 @@ DEBOUNCE_TIME => 5
 | ۱۰۰ مگاهرتز | ۲۰ میلی‌ثانیه | ۲٬۰۰۰٬۰۰۰ |
 
 <details>
-<summary>نحوه انتخاب دوره حذف نوسان</summary>
+<summary>نحوه انتخاب Debounce Period</summary>
 
-دکمه‌های مکانیکی معمولی برای ۵-۲۰ میلی‌ثانیه نوسان دارند. توصیه‌ها:
+Typical mechanical button‌ها برای ۵-۲۰ میلی‌ثانیه bounce دارند. توصیه‌ها:
 
-- **۱۰ میلی‌ثانیه**: خوب برای دکمه‌های با کیفیت بالا، پاسخ سریع‌تر
-- **۲۰ میلی‌ثانیه**: امن برای اکثر دکمه‌ها، پاسخ کمی کندتر
-- **۵۰ میلی‌ثانیه**: بسیار محافظه‌کارانه، تأخیر قابل توجه
+- **۱۰ میلی‌ثانیه**: خوب برای high-quality button‌ها، faster response
+- **۲۰ میلی‌ثانیه**: Safe برای اکثر button‌ها، slightly slower response
+- **۵۰ میلی‌ثانیه**: بسیار conservative، noticeable delay
 
-با ۲۰ میلی‌ثانیه شروع کنید و بر اساس دکمه‌های خاص خود تنظیم کنید. اگر گاهی فشردن‌های مضاعف می‌بینید، زمان حذف نوسان را افزایش دهید.
+با ۲۰ میلی‌ثانیه شروع کنید و بر اساس specific button‌های خود adjust کنید. اگر گاهی double-press‌ها می‌بینید، debounce time را افزایش دهید.
 
 </details>
 
@@ -359,35 +359,35 @@ DEBOUNCE_TIME => 5
 
 ## تصمیمات طراحی
 
-### چرا رویکرد مبتنی بر شمارنده؟
+### چرا Counter-based Approach؟
 
-حذف نوسان مبتنی بر شمارنده:
-- **ساده**: درک و پیاده‌سازی آسان
-- **قابل پیش‌بینی**: زمان حذف نوسان ثابت، رفتار قطعی
-- **کارآمد از نظر منابع**: فقط یک شمارنده به ازای هر دکمه
-- **قابل تنظیم**: تغییر زمان‌بندی با یک پارامتر عمومی واحد
+Counter-based debouncing:
+- **Simple**: درک و implement آسان
+- **Predictable**: Fixed debounce time، deterministic behavior
+- **Resource Efficient**: فقط یک counter به ازای هر button
+- **Configurable**: تغییر timing با یک single generic parameter
 
-رویکردهای جایگزین (ثبات‌های شیفت، فیلترهای RC آنالوگ) پیچیده‌تر هستند بدون مزایای قابل توجه برای این کاربرد.
+Alternative approach‌ها (shift register‌ها، analog RC filter‌ها) پیچیده‌تر هستند بدون significant benefit برای این application.
 
-### چرا همگام‌سازی ۲ مرحله‌ای؟
+### چرا Two-stage Synchronizer؟
 
-یک همگام‌ساز ۲ مرحله‌ای احتمال شبه‌پایداری را به سطوح ناچیز کاهش می‌دهد:
-- تک فلیپ‌فلاپ: ~۱۰٪ احتمال انتشار خروجی شبه‌پایدار
-- دو فلیپ‌فلاپ: ~۰.۰۱٪ احتمال
-- برای کاربردهای بحرانی، می‌توان از ۳ مرحله استفاده کرد
+یک two-stage synchronizer احتمال metastability را به سطوح negligible کاهش می‌دهد:
+- Single flip-flop: ~۱۰٪ chance of propagating metastable output
+- Two flip-flop‌ها: ~۰.۰۱٪ chance
+- برای critical application‌ها، می‌توان از ۳ stage استفاده کرد
 
-### چرا تشخیص لبه داخل حذف‌کننده نوسان؟
+### چرا Edge Detection داخل Debouncer؟
 
-یکپارچه‌سازی تشخیص لبه در حذف‌کننده نوسان:
-- تعداد اجزای خارجی را کاهش می‌دهد
-- تضمین می‌کند که خروجی همیشه یک پالس منفرد تمیز است
-- ماشین حالت را ساده می‌کند (نیاز به منطق تشخیص لبه نیست)
-- با انتظارات ماشین حالت مطابقت دارد (یک پالس به ازای هر فشردن)
+Integrate کردن edge detection در debouncer:
+- تعداد external component‌ها را کاهش می‌دهد
+- تضمین می‌کند که output همیشه یک clean single pulse است
+- FSM را simplify می‌کند (نیاز به edge detection logic نیست)
+- با FSM expectation‌ها match می‌کند (یک pulse به ازای هر press)
 
-### چرا از ماژول‌های جداگانه حذف نوسان و تشخیص لبه استفاده نشد؟
+### چرا از Separate Debounce و Edge Detection Module‌ها استفاده نشد؟
 
-در حالی که طراحی ماژولار خوب است، ترکیب آن‌ها:
-- مشکلات احتمالی زمان‌بندی بین ماژول‌ها را کاهش می‌دهد
-- عملیات اتمی را تضمین می‌کند (حذف نوسان + تشخیص لبه با هم اتفاق می‌افتند)
-- طراحی سطح بالا را ساده می‌کند
-- روش متداول صنعتی برای واسط‌های دکمه است
+در حالی که modular design خوب است، combine کردن آن‌ها:
+- Potential timing issue‌ها بین module‌ها را کاهش می‌دهد
+- Atomic operation را تضمین می‌کند (debounce + edge detect با هم happen می‌شوند)
+- Top-level design را simplify می‌کند
+- Common industry practice برای button interface‌ها است
