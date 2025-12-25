@@ -96,7 +96,7 @@ run_testbench() {
 
     # Run simulation
     if [ "$GENERATE_WAVE" = true ]; then
-        if ghdl -r --std=08 "$name" --wave="simulation/${name}.ghw" 2>&1; then
+        if ghdl -r --std=08 "$name" --stop-time=100us --wave="simulation/${name}.ghw" 2>&1; then
             echo ""
             echo "✓ $name PASSED"
             echo "  Waveform: simulation/${name}.ghw"
@@ -107,7 +107,7 @@ run_testbench() {
             ((FAILED++)) || true
         fi
     else
-        if ghdl -r --std=08 "$name" 2>&1; then
+        if ghdl -r --std=08 "$name" --stop-time=100us 2>&1; then
             echo ""
             echo "✓ $name PASSED"
             ((PASSED++)) || true
