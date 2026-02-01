@@ -24,7 +24,6 @@ VHDL (VHSIC Hardware Description Language) is a programming language used to des
 - [Synthesis for FPGA](#synthesis-for-fpga)
 - [Waveform Viewing](#waveform-viewing)
 - [Troubleshooting](#troubleshooting)
-- [Documentation](#documentation)
 
 ---
 
@@ -134,7 +133,6 @@ pattern-based-digital-lock/
 ├── README.md                 # This file
 ├── PRD.md                    # Product Requirements Document
 ├── scripts/                  # Automation scripts
-│   ├── README.md
 │   ├── install.sh            # Install dependencies
 │   ├── build.sh              # Compile source files
 │   ├── test.sh               # Run testbenches
@@ -142,27 +140,18 @@ pattern-based-digital-lock/
 │   ├── wave.sh               # Open waveform viewer
 │   └── clean.sh              # Remove generated files
 ├── src/                      # Source VHDL files
-│   ├── README.md
 │   ├── digital_lock.vhd      # Main FSM controller
 │   ├── button_debouncer.vhd  # Button debounce circuit
 │   └── top_level.vhd         # System integration
 ├── testbench/                # Test files
-│   ├── README.md
 │   ├── tb_digital_lock.vhd   # FSM unit tests
 │   ├── tb_top_level.vhd      # Full system tests
 │   ├── tb_fsm_coverage.vhd   # State coverage tests
 │   ├── tb_edge_cases.vhd     # Edge case tests
 │   └── tb_debouncer.vhd      # Debouncer unit tests
 ├── simulation/               # Simulation outputs
-│   ├── README.md
 │   └── *.ghw                 # Waveform files
-├── synthesis/                # Synthesis outputs
-│   └── README.md
-└── docs/                     # Detailed documentation
-    ├── digital_lock.md
-    ├── button_debouncer.md
-    ├── top_level.md
-    └── testbenches.md
+└── synthesis/                # Synthesis outputs
 ```
 
 ---
@@ -519,24 +508,12 @@ error: signal has multiple drivers
 
 ### Getting Help
 
-1. Check the [detailed documentation](docs/) for each component
-2. Review the testbench code for usage examples
-3. Examine waveforms to understand signal behavior
+1. Review the testbench code for usage examples
+2. Examine waveforms to understand signal behavior
 
 ---
 
-## Documentation
-
-Detailed documentation for each component is available in the [docs/](docs/) directory:
-
-- [digital_lock.md](docs/digital_lock.md) - FSM controller architecture and implementation
-- [button_debouncer.md](docs/button_debouncer.md) - Debounce circuit design
-- [top_level.md](docs/top_level.md) - System integration and configuration
-- [testbenches.md](docs/testbenches.md) - Test suite documentation
-
-### Scripts Reference
-
-Automation scripts are in [scripts/](scripts/):
+## Scripts Reference
 
 | Script | Description |
 |--------|-------------|

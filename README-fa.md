@@ -24,7 +24,6 @@ VHDL (زبان توصیف سخت‌افزار VHSIC) یک زبان برنامه�
 - [Synthesis برای FPGA](#synthesis-برای-fpga)
 - [مشاهده Waveform](#مشاهده-waveform)
 - [عیب‌یابی](#عیبیابی)
-- [مستندات](#مستندات)
 
 ---
 
@@ -135,7 +134,6 @@ pattern-based-digital-lock/
 ├── README-fa.md              # نسخه فارسی
 ├── PRD.md                    # سند نیازمندی‌های محصول
 ├── scripts/                  # script‌های اتوماسیون
-│   ├── README.md
 │   ├── install.sh            # نصب وابستگی‌ها
 │   ├── build.sh              # کامپایل فایل‌های source
 │   ├── test.sh               # اجرای testbench‌ها
@@ -143,27 +141,18 @@ pattern-based-digital-lock/
 │   ├── wave.sh               # باز کردن waveform viewer
 │   └── clean.sh              # حذف فایل‌های تولید شده
 ├── src/                      # فایل‌های source VHDL
-│   ├── README.md
 │   ├── digital_lock.vhd      # FSM controller اصلی
 │   ├── button_debouncer.vhd  # مدار button debouncer
 │   └── top_level.vhd         # یکپارچه‌سازی سیستم
 ├── testbench/                # فایل‌های تست
-│   ├── README.md
 │   ├── tb_digital_lock.vhd   # تست‌های واحد FSM
 │   ├── tb_top_level.vhd      # تست‌های کامل سیستم
 │   ├── tb_fsm_coverage.vhd   # تست‌های state coverage
 │   ├── tb_edge_cases.vhd     # تست‌های edge case
 │   └── tb_debouncer.vhd      # تست‌های واحد debouncer
 ├── simulation/               # خروجی‌های simulation
-│   ├── README.md
 │   └── *.ghw                 # فایل‌های waveform
-├── synthesis/                # خروجی‌های synthesis
-│   └── README.md
-└── docs/                     # مستندات تفصیلی
-    ├── digital_lock.md
-    ├── button_debouncer.md
-    ├── top_level.md
-    └── testbenches.md
+└── synthesis/                # خروجی‌های synthesis
 ```
 
 ---
@@ -520,24 +509,12 @@ error: signal has multiple drivers
 
 ### دریافت کمک
 
-1. [مستندات تفصیلی](docs/) را برای هر component بررسی کنید
-2. کد testbench را برای مثال‌های استفاده مرور کنید
-3. Waveform‌ها را برای درک signal behavior بررسی کنید
+1. کد testbench را برای مثال‌های استفاده مرور کنید
+2. Waveform‌ها را برای درک signal behavior بررسی کنید
 
 ---
 
-## مستندات
-
-مستندات تفصیلی برای هر component در دایرکتوری [docs/](docs/) موجود است:
-
-- [digital_lock.md](docs/digital_lock.md) - معماری و پیاده‌سازی FSM controller
-- [button_debouncer.md](docs/button_debouncer.md) - طراحی مدار debouncer
-- [top_level.md](docs/top_level.md) - یکپارچه‌سازی سیستم و configuration
-- [testbenches.md](docs/testbenches.md) - مستندات test suite
-
-### مرجع Script‌ها
-
-Script‌های اتوماسیون در [scripts/](scripts/):
+## مرجع Script‌ها
 
 | Script | توضیحات |
 |---------|---------|
